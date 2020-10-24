@@ -1,8 +1,10 @@
 import { html, render } from "lit-html";
+import { injectGlobal } from "emotion";
+import createEmotion from "create-emotion";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
 
-export { store };
+export { store, injectGlobal as globalCSS };
 
 const errors = {
     notAttached: () => new Error("ShadowRoot isn't yet attached to the dom yet, listen to onAttached lifecycle event"),
@@ -26,6 +28,7 @@ export function createComp(name: string, defineComp: Function) {
             cycleBeforeRender: Function;
             cycleAfterRender: Function;
             cycleAfterRemoved: Function;
+            emotionShadow: any;
 
             constructor() {
                 super();
@@ -78,6 +81,23 @@ export function createComp(name: string, defineComp: Function) {
                     throw errors.notAttached();
                 };
 
+                this.emotionShadow = document.createElement("div");
+                this.emotionShadow.id = "emotion-shadow";
+                //this.shadowRootAccessor.appendChild(this.emotionShadow);
+
+                const {
+                    flush,
+                    hydrate,
+                    cx,
+                    merge,
+                    getRegisteredStyles,
+                    injectGlobal,
+                    keyframes,
+                    css,
+                    sheet,
+                    cache,
+                } = createEmotion({ container: this.emotionShadow });
+
                 this.htmlTemplate = defineComp({
                     createState,
                     onAttached,
@@ -89,12 +109,15 @@ export function createComp(name: string, defineComp: Function) {
                     html,
                     query,
                     queryAll,
+                    css,
+                    cx,
+                    keyframes,
                     props: this.props,
                     self: this,
                 });
                 this.cycleBeforeFirstRender();
                 this.cycleBeforeRender();
-                render(this.htmlTemplate(), this.shadowRootAccessor);
+                render(html`${this.emotionShadow}${this.htmlTemplate()}`, this.shadowRootAccessor);
                 this.cycleAfterRender();
             }
 
@@ -107,16 +130,26 @@ export function createComp(name: string, defineComp: Function) {
                     }
                     setPath(storeObj, curCall.key, curCall.val);
                     this.cycleBeforeRender();
-                    render(this.htmlTemplate(), this.shadowRootAccessor);
+                    render(html`${this.emotionShadow}${this.htmlTemplate()}`, this.shadowRootAccessor);
                     this.cycleAfterRender();
                     return curCall.cb ? curCall.cb() : undefined;
                 }
+                const styleContainer = document.createElement("STYLE");
+                this.shadowRootAccessor.appendChild(styleContainer);
             }
 
             connectedCallback() {
                 this.attached = true;
                 this.execSetStateQueue();
                 this.cycleAfterAttached();
+                const styleContainer = this.shadowRootAccessor.querySelector("#emotion-shadow");
+                if (styleContainer && styleContainer.children) {
+                    for (let u = 0; u < styleContainer.children.length; u++) {
+                        const clone = styleContainer.children[u].cloneNode(true);
+                        this.shadowRootAccessor.appendChild(clone);
+                    }
+                    styleContainer.remove();
+                }
             }
 
             disconnectedCallback() {
