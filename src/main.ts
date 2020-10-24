@@ -1,6 +1,7 @@
 import { html, render } from "lit-html";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
+import Litecss from "./litecss";
 
 export { store };
 
@@ -26,6 +27,8 @@ export function createComp(name: string, defineComp: Function) {
             cycleBeforeRender: Function;
             cycleAfterRender: Function;
             cycleAfterRemoved: Function;
+            litecss: Litecss;
+            styleEl: HTMLStyleElement;
 
             constructor() {
                 super();
@@ -47,6 +50,8 @@ export function createComp(name: string, defineComp: Function) {
                 const onRemove = (cb: Function) => (this.cycleAfterRemoved = cb);
 
                 this.shadowRootAccessor = this.attachShadow({ mode: "open" });
+                this.litecss = new Litecss(this.shadowRootAccessor);
+                this.styleEl = document.createElement("style");
 
                 const createState = (initState = {}) => {
                     store.__add(this.storeSymbol, { ctx: this, state: initState });
@@ -78,6 +83,8 @@ export function createComp(name: string, defineComp: Function) {
                     throw errors.notAttached();
                 };
 
+                //const css = this.litecss.parser.bind(this.litecss);
+                
                 this.htmlTemplate = defineComp({
                     createState,
                     onAttached,
@@ -89,12 +96,13 @@ export function createComp(name: string, defineComp: Function) {
                     html,
                     query,
                     queryAll,
+                    css: this.litecss.parser.bind(this.litecss),
                     props: this.props,
                     self: this,
                 });
                 this.cycleBeforeFirstRender();
                 this.cycleBeforeRender();
-                render(this.htmlTemplate(), this.shadowRootAccessor);
+                this.__renderElement()
                 this.cycleAfterRender();
             }
 
@@ -107,10 +115,15 @@ export function createComp(name: string, defineComp: Function) {
                     }
                     setPath(storeObj, curCall.key, curCall.val);
                     this.cycleBeforeRender();
-                    render(this.htmlTemplate(), this.shadowRootAccessor);
+                    this.__renderElement()
                     this.cycleAfterRender();
                     return curCall.cb ? curCall.cb() : undefined;
                 }
+            }
+
+            __renderElement() {
+                render(html`${this.styleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
+                this.litecss.addCSS();
             }
 
             connectedCallback() {
