@@ -17,15 +17,19 @@ export default class {
         this.styleQueue = [];
         this.generatedClasses = new Map();
     }
-    parser(strings: TemplateStringsArray, ...inputs: string[]): string {
+    private __createNewClass(rules: string): string {
         const className: string = `_${uid()}`;
-        const rules = buildTemplate(strings, inputs);
-        const newClass = `.${className} {${rules}}`;
+        const newClass = `.${className}{${rules}}`;
         this.generatedClasses.set(className, rules);
         this.styleQueue.push(newClass);
         return className;
     }
-    cx(...args: any[]): string {
+    public parser(strings: TemplateStringsArray, ...inputs: string[]): string {
+        const rules = buildTemplate(strings, inputs);
+        const className = this.__createNewClass(rules);
+        return className;
+    }
+    public cx(...args: any[]): string {
         if (args.length === 1) {
             const obj = args[0];
             return Object.keys(obj).reduce((acc: string, key: string): string => {
@@ -44,14 +48,11 @@ export default class {
             const rules = args.reduce((acc: string, className: string): string => {
                 return `${acc}${this.generatedClasses.get(className)}`;
             }, "");
-            const className: string = `m_${uid()}`;
-            const newClass = `.${className} {${rules}}`;
-            this.generatedClasses.set(className, rules);
-            this.styleQueue.push(newClass);
+            const className = this.__createNewClass(rules);
             return className;
         }
     }
-    addCSS(): void {
+    public addCSS(): void {
         const styleSheetEl = this.shadowContainer.querySelector("style");
         while (this.styleQueue.length > 0) {
             const newClass: any = this.styleQueue.shift();
