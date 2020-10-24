@@ -1,10 +1,19 @@
-import { createComp, store } from "../src/main";
+import { createComp, store, addGlobalCSS } from "../src/main";
+
+const black = "black";
+
+addGlobalCSS`
+    body {
+        background-color: ${black};
+    }
+`
 
 createComp("test-comp", ({ createState, html, css: dd }: any) => {
     const { state, setState } = createState({name: "world"});
     setState("name", "world :)")
 
-    const red = dd`color: red; font-size: 4em;`
+    const color = "red";
+    const style = dd`color: ${color}; font-size: 4em;`
 
-    return () => html`<div class=${red}>helllllo ${state.name}</div>`;
+    return () => html`<div class=${style}>helllllo ${state.name}</div>`;
 });

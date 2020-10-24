@@ -1,9 +1,9 @@
 import { html, render } from "lit-html";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
-import Litecss from "./litecss";
+import LiteCSS, { addGlobalCSS } from "./litecss";
 
-export { store };
+export { store, addGlobalCSS };
 
 const errors = {
     notAttached: () => new Error("ShadowRoot isn't yet attached to the dom yet, listen to onAttached lifecycle event"),
@@ -27,7 +27,7 @@ export function createComp(name: string, defineComp: Function) {
             cycleBeforeRender: Function;
             cycleAfterRender: Function;
             cycleAfterRemoved: Function;
-            litecss: Litecss;
+            liteCSS: LiteCSS;
             styleEl: HTMLStyleElement;
 
             constructor() {
@@ -50,7 +50,7 @@ export function createComp(name: string, defineComp: Function) {
                 const onRemove = (cb: Function) => (this.cycleAfterRemoved = cb);
 
                 this.shadowRootAccessor = this.attachShadow({ mode: "open" });
-                this.litecss = new Litecss(this.shadowRootAccessor);
+                this.liteCSS = new LiteCSS(this.shadowRootAccessor);
                 this.styleEl = document.createElement("style");
 
                 const createState = (initState = {}) => {
@@ -83,7 +83,7 @@ export function createComp(name: string, defineComp: Function) {
                     throw errors.notAttached();
                 };
 
-                //const css = this.litecss.parser.bind(this.litecss);
+                //const css = this.liteCSS.parser.bind(this.liteCSS);
                 
                 this.htmlTemplate = defineComp({
                     createState,
@@ -96,7 +96,7 @@ export function createComp(name: string, defineComp: Function) {
                     html,
                     query,
                     queryAll,
-                    css: this.litecss.parser.bind(this.litecss),
+                    css: this.liteCSS.parser.bind(this.liteCSS),
                     props: this.props,
                     self: this,
                 });
@@ -123,7 +123,7 @@ export function createComp(name: string, defineComp: Function) {
 
             __renderElement() {
                 render(html`${this.styleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
-                this.litecss.addCSS();
+                this.liteCSS.addCSS();
             }
 
             connectedCallback() {
