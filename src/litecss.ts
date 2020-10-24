@@ -2,7 +2,8 @@ import uniqid from "short-unique-id";
 const uid = new uniqid({ length: 8 });
 
 function buildTemplate(strings: TemplateStringsArray, inputs: string[]): string {
-    return strings.reduce((acc, rule, index) => {
+    return strings.reduce((acc: string, rule: string, index: number) => {
+        rule = rule.replace(/(\r\n|\n|\r|\s)/gm, "");
         return `${acc}${rule}${inputs[index] ?? ""}`;
     }, "");
 }
@@ -40,7 +41,6 @@ export default class {
                 return `${acc}${bool ? obj[key] : ""}`;
             }, "");
         } else {
-            console.log(args)
             const rules = args.reduce((acc: string, className: string): string => {
                 return `${acc}${this.generatedClasses.get(className)}`;
             }, "");
