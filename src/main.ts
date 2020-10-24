@@ -97,6 +97,7 @@ export function createComp(name: string, defineComp: Function) {
                     query,
                     queryAll,
                     css: this.liteCSS.parser.bind(this.liteCSS),
+                    cx: this.liteCSS.cx.bind(this.liteCSS),
                     props: this.props,
                     self: this,
                 });
