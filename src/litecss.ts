@@ -35,12 +35,9 @@ class StyleSheet {
 
 export default class {
     shadowContainer: any;
-    styleEl: any;
-    styleSheet: StyleSheet;
     styleQueue: any[];
     constructor(shadowContainer: any) {
         this.shadowContainer = shadowContainer;
-        this.styleSheet = new StyleSheet();
         this.styleQueue = [];
     }
     parser(strings: string[], ...inputs: any[]) {
