@@ -2,6 +2,7 @@ import { html, render } from "lit-html";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
 import LiteCSS, { addGlobalCSS } from "./litecss";
+import UseFetch from "./fetch";
 
 export { store, addGlobalCSS };
 
@@ -89,6 +90,8 @@ export function createComp(name: string, defineComp: Function) {
                     throw ERRORS.notAttached();
                 };
 
+                const useFetch = new UseFetch;
+
                 this.htmlTemplate = defineComp({
                     createState,
                     onAttached,
@@ -100,6 +103,7 @@ export function createComp(name: string, defineComp: Function) {
                     html,
                     query,
                     queryAll,
+                    useFetch: useFetch.init.bind(useFetch),
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     cx: this.liteCSS.cx.bind(this.liteCSS),
                     props: this.props,
@@ -126,7 +130,7 @@ export function createComp(name: string, defineComp: Function) {
                 }
             }
 
-            __renderElement() {
+            private __renderElement() {
                 render(html`${this.shadowStyleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
                 this.liteCSS.addCSS();
             }

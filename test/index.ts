@@ -11,7 +11,7 @@ addGlobalCSS`
     }
 `;
 
-createComp("test-comp", ({ createState, html, css, cx }: any) => {
+createComp("test-comp", ({ createState, html, css, cx, useFetch, beforeFirstRender }: any) => {
     const {
         state: { name, cond },
         setState,
@@ -24,6 +24,17 @@ createComp("test-comp", ({ createState, html, css, cx }: any) => {
 
     const join1 = css`color: blue;`;
     const join2 = css`text-decoration: underline; font-size: 5em;`;
+
+    const { get, post, getResponse, isLoading, getError } = useFetch("http://date.jsontest.com/");
+
+    beforeFirstRender(async () => {
+
+        const data = await getResponse().then((r: any) => r.json());
+        
+        console.log(data)
+        
+        
+    })
 
     return () =>
         html`<div class=${cx({ [cond]: cx(join2, style, style2) }) + " globalText"}>helllllo ${name}</div>
