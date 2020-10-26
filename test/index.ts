@@ -36,21 +36,31 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
     `;
 
     beforeFirstRender(() => {
-        const { req, loading } = fetcher(
-            {get1: "https://jsonplaceholder.typicode.com/todos/1", get2: "https://jsonplaceholder.typicode.com/todos/2"},
+        const { req, loading, getResponse } = fetcher(
+            {
+                get1: "https://jsonplaceholder.typicode.com/todos/1",
+                get2: "https://jsonplaceholder.typicode.com/todos/2",
+            },
             {},
             true
         );
-
-        const [get, post] = fetcher("https://jsonplaceholder.typicode.com");
-
-        get(["/todos/1", "/todos/2"], ({req, loading, response}: any) => {
-            console.log(loading());
-            req.then((res: any) => {
-                console.log(res);
-                console.log(loading());
-            })
+        req.then((res: any) => {
+            console.log(res, getResponse())
         })
+
+        const [get, post] = fetcher("http://dummy.restapiexample.com/api/v1");
+
+        
+
+        get(["/employee/1", "/employee/3"], ({ req, isLoading, getResponse }: any) => {
+            console.log(isLoading());
+            console.log(getResponse());
+            req.then((res: any) => {
+                console.log("res", res);
+                console.log(isLoading());
+                console.log(getResponse());
+            });
+        });
 
         // console.log(loading())
         // req.then((res: any) => {

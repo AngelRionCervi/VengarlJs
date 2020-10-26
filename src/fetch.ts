@@ -1,4 +1,10 @@
-const __exec = (url: string, options: any) => {
+interface namedQuery {
+    [key: string]: string;
+}
+
+type endpoint = string | string[] | namedQuery;
+
+const __fetch = (url: string, options: any) => {
     let _loading: boolean = true;
     let _error: any = null;
     let _response: any = null;
@@ -14,35 +20,56 @@ const __exec = (url: string, options: any) => {
                 _error = err;
                 return err;
             }),
-        loading: () => _loading,
-        response: () => _response,
-        error: () => _error,
+        isLoading: () => _loading,
+        getResponse: () => _response,
+        getError: () => _error,
     };
 };
 
-const __execAll = (urls: any, options: any) => {
+const __exec = (urls: any, options: any) => {
+    if (typeof urls === "string") {
+        urls = [urls];
+    }
     let keys: any = null;
     if (!Array.isArray(urls)) {
         keys = Object.keys(urls);
         urls = Object.values(urls);
     }
     let _loading: boolean = true;
-    let _error: any = null;
-    let _response: any = null;
+    let errorsCb: any = [];
+    let responsesCb: any = [];
+    let _errors: any = keys !== null ? {} : [];
+    let _responses: any = keys !== null ? {} : [];
     const initReq = Promise.all(
-        urls.map((u: any) => {
-            const { req } = __exec(u, options);
+        urls.map((u: any, i: number) => {
+            let o: any = options;
+            if (Array.isArray(options) && options[i] !== undefined) {
+                o = options[i];
+            }
+            const { req, getResponse, getError } = __fetch(u, o);
+            responsesCb.push(getResponse);
+            errorsCb.push(getError);
             return req;
         })
     )
         .then((res) => {
-            _response = res;
-            _loading = false;
             return res;
         })
         .catch((err) => {
+            return err;
+        })
+        .finally(() => {
             _loading = false;
-            _error = err;
+            [responsesCb, errorsCb].forEach((cbs: Function[], index: number) => {
+                const conObj = index === 0 ? _responses : _errors;
+                cbs.forEach((r: Function, i: number) => {
+                    if (keys !== null) {
+                        conObj[keys[i]] = r();
+                    } else {
+                        conObj.push(r());
+                    }
+                });
+            });
         });
     return {
         req: new Promise((resolve, reject) => {
@@ -67,35 +94,38 @@ const __execAll = (urls: any, options: any) => {
                     return reject(err);
                 });
         }),
-        loading: () => _loading,
-        response: () => _response,
-        error: () => _error,
+        isLoading: () => _loading,
+        getResponse: () => _responses,
+        getError: () => _errors,
     };
 };
 
-const autoFetcher = (url: string | string[], options: any) => {
-    if (typeof url === "string") {
-        const { req, loading, response, error } = __exec(url, options);
-        return { req, loading, response, error };
-    }
-    const { req, loading, response, error } = __execAll(url, options);
-    return { req, loading, response, error };
+const autoFetcher = (url: endpoint, options: any) => {
+    const { req, isLoading, getResponse, getError } = __exec(url, options);
+    return { req, isLoading, getResponse, getError };
 };
 
 const fetcher = (url: string, options: any) => {
-    const __start = (endpoint: string | string[], cb: Function, options: any) => {
+    const __start = (endpoint: endpoint, cb: Function, options: any) => {
+        let newUrls: any = "";
         if (typeof endpoint === "string") {
-            const newUrl = `${url}${endpoint}`;
-            const { req, loading, response, error } = __exec(newUrl, options);
-            return cb({ req, loading, error, response });
+            newUrls = `${url}${endpoint}`;
+        } else {
+            if (Array.isArray(endpoint)) {
+                newUrls = endpoint.map((end) => `${url}${end}`);
+            } else {
+                newUrls = {};
+                Object.keys(endpoint).forEach((key) => {
+                    newUrls[key] = `${url}${endpoint[key]}`;
+                });
+            }
         }
-        const newUrls = endpoint.map((end) => `${url}${end}`);
-        const { req, loading, response, error } = __execAll(newUrls, options);
-        return cb({ req, loading, error, response });
+        const { req, isLoading, getResponse, getError } = __exec(newUrls, options);
+        return cb({ req, isLoading, getResponse, getError });
     };
 
-    const __getArgsGet = (args: any[]): [string | string[], Function] => {
-        let endpoint: string | string[] = "";
+    const __getArgsGet = (args: any[]): [any, Function] => {
+        let endpoint: any = "";
         let cb: Function = () => null;
         if (args.length === 2) {
             endpoint = args[0];
@@ -118,7 +148,7 @@ const fetcher = (url: string, options: any) => {
             cb = args[2];
         } else if (args.length === 2) {
             data = args[0];
-            cb = args[2];
+            cb = args[1];
         } else if (args.length <= 1) {
             throw new Error(
                 `"post function needs at least 2 arguments, 1 : the data to post in object format, 2 : a callback function"`
@@ -135,7 +165,14 @@ const fetcher = (url: string, options: any) => {
 
     const post = (...args: any[]) => {
         const [data, endpoint, cb] = __getArgsPost(args);
-        const newOptions = { ...options, body: JSON.stringify(data), method: "post" };
+        let newOptions: any;
+        if (Array.isArray(data)) {
+            newOptions = data.reduce((acc, d) => {
+                return [...acc, { ...options, body: JSON.stringify(d), method: "post" }];
+            }, []);
+        } else {
+            newOptions = { ...options, body: JSON.stringify(data), method: "post" };
+        }
         return __start(endpoint, cb, newOptions);
     };
     return [get, post];
