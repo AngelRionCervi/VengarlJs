@@ -11,7 +11,7 @@ addGlobalCSS`
     }
 `;
 
-createComp("test-comp", ({ createState, html, css, cx, useFetch, beforeFirstRender }: any) => {
+createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender }: any) => {
     const {
         state: { name, cond },
         setState,
@@ -19,22 +19,56 @@ createComp("test-comp", ({ createState, html, css, cx, useFetch, beforeFirstRend
     setState("name", "world :)");
 
     const color = "red";
-    const style = css`color: ${color}; font-size: 3em;`;
-    const style2 = css`text-decoration: overline;`;
+    const style = css`
+        color: ${color};
+        font-size: 3em;
+    `;
+    const style2 = css`
+        text-decoration: overline;
+    `;
 
-    const join1 = css`color: blue;`;
-    const join2 = css`text-decoration: underline; font-size: 5em;`;
+    const join1 = css`
+        color: blue;
+    `;
+    const join2 = css`
+        text-decoration: underline;
+        font-size: 5em;
+    `;
 
-    const { get, post, getResponse, isLoading, getError } = useFetch("http://date.jsontest.com/");
+    beforeFirstRender(() => {
+        const { req, loading } = fetcher(
+            ["https://jsonplaceholder.typicode.com/todos/1", "https://jsonplaceholder.typicode.com/todos/2"],
+            {},
+            true
+        );
+        console.log(loading())
+        req.then((res: any) => {
+            console.log(res)
+            console.log(loading())
+        })
 
-    beforeFirstRender(async () => {
+        // const [ get, post ] = fetcher('https://jsonplaceholder.typicode.com', {});
 
-        const data = await getResponse().then((r: any) => r.json());
-        
-        console.log(data)
-        
-        
-    })
+        // get("/todos/1", async ({req, loading, response}: any) => {
+        //     console.log(loading())
+        //     const data = await req;
+        //     console.log(loading(), data, response())
+        // })
+        // get("/todos/2", async ({req, loading, response}: any) => {
+        //     const data = await req;
+        //     //console.log(data, response)
+        // })
+
+        // get("/todos/1").then((data: any) => {
+        //     console.log("getTodo/1", getResponse(), data)
+        // })
+        // get("/todos/2").then((data: any) => {
+        //     console.log("getTodo/2", getResponse(), data)
+        // })
+        // post({somedata: "yes"}, "/posts").then((data: any) => {
+        //     console.log("post todos1", getResponse(), data)
+        // })
+    });
 
     return () =>
         html`<div class=${cx({ [cond]: cx(join2, style, style2) }) + " globalText"}>helllllo ${name}</div>

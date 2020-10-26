@@ -1,39 +1,18 @@
-interface useFetch {
-    loading: boolean;
-    __exec(arg0: string, optionsCopy: any): Promise<any>;
-    response: null | Promise<any>;
-    error: any;
-}
-
-export default class {
-    public options: any;
-    public url: null | string;
-    _loading: boolean;
-    _response: any;
-    _error: any;
-
+class Exec {
+    private _loading: boolean;
+    private _error: Error | null;
+    private _response: Response | null;
+    public req: Promise<any> | undefined;
     constructor() {
-        this._response = null;
+        this._loading = true;
         this._error = null;
-        this._loading = false;
-        this.options = {};
-        this.url = null;
+        this._response = null;
     }
-
-    public init(url: string, options: any) {
-        Object.assign(this.options, options);
-        this.url = url;
-        return {
-            get: this.get.bind(this),
-            post: this.post.bind(this),
-            getResponse: () => this._response,
-            isLoading: () => this._loading,
-            getError: () => this._error,
-        };
-    }
-
-    private async __exec(url: string, options: any) {
-        return fetch(url, options)
+    init(url: string, options: any) {
+        this._loading = true;
+        this._error = null;
+        this._response = null;
+        this.req = fetch(url, options)
             .then((res) => {
                 this._loading = false;
                 this._response = res;
@@ -45,20 +24,57 @@ export default class {
                 return err;
             });
     }
-
-    public async get(endpoint: string = ""): Promise<any> {
-        const optionsCopy = { ...this.options };
-        optionsCopy.method = "get";
-        this._loading = true;
-        console.log("thisloading", this._loading);
-        return await this.__exec(`${this.url}${endpoint}`, this.options);
-    }
-
-    public post(data: any, endpoint: string = ""): any {
-        const optionsCopy = { ...this.options };
-        optionsCopy.method = "post";
-        this._loading = true;
-        optionsCopy.body = JSON.stringify(data);
-        return this.__exec(`${this.url}${endpoint}`, this.options);
-    }
+    loading = () => this._loading;
+    response = () => this._response;
+    error = () => this._error;
 }
+
+const autoFetcher = (url: string | string[], options: any) => {
+    if (!Array.isArray(url)) {
+        const exec = new Exec();
+        exec.init(url, options);
+        return { req: exec.req, loading: exec.loading, error: exec.error, response: exec.response };
+    }
+
+    let loading = true;
+    let error = null;
+    let response = null;
+    const req = Promise.all(url.map((u) => {
+        const exec = new Exec();
+        exec.init(u, options);
+        return exec.req;
+    })).then((res) => {
+        response = res;
+        loading = false;
+        return res;
+    }).catch((err) => {
+        loading = false;
+        error = err;
+    })
+    return { req, loading: () => loading, error, response };
+};
+
+const fetcher = (url: string, options: any) => {
+    const get = (endpoint: string = "", cb: Function) => {
+        const exec = new Exec();
+        const newUrl = `${url}${endpoint}`;
+        const newOptions = { ...options, method: "get" };
+        exec.init(newUrl, newOptions);
+        return cb({ req: exec.req, loading: exec.loading, error: exec.error, response: exec.response });
+    };
+    const post = (data: any, endpoint: string = "", cb: Function) => {
+        const exec = new Exec();
+        const newUrl = `${url}${endpoint}`;
+        const newOptions = { ...options, body: JSON.stringify(data), method: "post" };
+        exec.init(newUrl, newOptions);
+        return cb({ req: exec.req, loading: exec.loading, error: exec.error, response: exec.response });
+    };
+    return [get, post];
+};
+
+export default (url: string, options: any = {}, autoExec: boolean = false) => {
+    if (autoExec) {
+        return autoFetcher(url, options);
+    }
+    return fetcher(url, options);
+};

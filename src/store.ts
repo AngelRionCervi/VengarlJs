@@ -8,13 +8,19 @@ const storeInstance = () => {
     const globalKey = "globals";
     store.set(globalKey, {});
     return {
-        __add(symbol: symbol, foreignState: any): object {
-            store.set(symbol, foreignState);
+        __add(symbol: symbol, foreignContext: any): object {
+            store.set(symbol, foreignContext);
             return this;
         },
         __get(symbol: symbol): object {
             if (!store.has(symbol)) return this;
             return store.get(symbol).state;
+        },
+        __addToExisting(symbol: symbol, addedState: any): object {
+            const existingState = store.get(symbol).state;
+            const newState = {...existingState, ...addedState};
+            store.get(symbol).state = newState;
+            return this;
         },
         remove(symbol: symbol): object {
             store.delete(symbol);

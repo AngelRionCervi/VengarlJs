@@ -2,7 +2,7 @@ import { html, render } from "lit-html";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
 import LiteCSS, { addGlobalCSS } from "./litecss";
-import UseFetch from "./fetch";
+import fetcher from "./fetch";
 
 export { store, addGlobalCSS };
 
@@ -48,7 +48,6 @@ export function createComp(name: string, defineComp: Function) {
                 this.cycleBeforeFirstRender = () => undefined;
                 this.cycleAfterAttached = () => undefined;
                 this.cycleAfterRemoved = () => undefined;
-                this.setState = () => undefined;
 
                 const beforeFirstRender = (cb: Function) => (this.cycleBeforeFirstRender = cb);
                 const beforeRender = (cb: Function) => (this.cycleBeforeRender = cb);
@@ -60,14 +59,16 @@ export function createComp(name: string, defineComp: Function) {
                 this.liteCSS = new LiteCSS(this.shadowRootAccessor);
                 this.shadowStyleEl = document.querySelector("style")?.cloneNode(true);
 
+                store.__add(this.storeSymbol, { ctx: this, state: {} });
+                this.setState = (key: string, val: any, cb?: Function) => {
+                    this.setStateQueue.push({ key, val, cb });
+                    if (this.attached) {
+                        this.execSetStateQueue();
+                    }
+                };
+
                 const createState = (initState = {}) => {
-                    store.__add(this.storeSymbol, { ctx: this, state: initState });
-                    this.setState = (key: string, val: any, cb?: Function) => {
-                        this.setStateQueue.push({ key, val, cb });
-                        if (this.attached) {
-                            this.execSetStateQueue();
-                        }
-                    };
+                    store.__addToExisting(this.storeSymbol, initState);
                     return { state: store.__get(this.storeSymbol), setState: this.setState };
                 };
 
@@ -90,8 +91,6 @@ export function createComp(name: string, defineComp: Function) {
                     throw ERRORS.notAttached();
                 };
 
-                const useFetch = new UseFetch;
-
                 this.htmlTemplate = defineComp({
                     createState,
                     onAttached,
@@ -103,7 +102,7 @@ export function createComp(name: string, defineComp: Function) {
                     html,
                     query,
                     queryAll,
-                    useFetch: useFetch.init.bind(useFetch),
+                    fetcher,
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     cx: this.liteCSS.cx.bind(this.liteCSS),
                     props: this.props,
