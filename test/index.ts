@@ -37,15 +37,26 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
 
     beforeFirstRender(() => {
         const { req, loading } = fetcher(
-            ["https://jsonplaceholder.typicode.com/todos/1", "https://jsonplaceholder.typicode.com/todos/2"],
+            {get1: "https://jsonplaceholder.typicode.com/todos/1", get2: "https://jsonplaceholder.typicode.com/todos/2"},
             {},
             true
         );
-        console.log(loading())
-        req.then((res: any) => {
-            console.log(res)
-            console.log(loading())
+
+        const [get, post] = fetcher("https://jsonplaceholder.typicode.com");
+
+        get(["/todos/1", "/todos/2"], ({req, loading, response}: any) => {
+            console.log(loading());
+            req.then((res: any) => {
+                console.log(res);
+                console.log(loading());
+            })
         })
+
+        // console.log(loading())
+        // req.then((res: any) => {
+        //     console.log(res)
+        //     console.log(loading())
+        // })
 
         // const [ get, post ] = fetcher('https://jsonplaceholder.typicode.com', {});
 

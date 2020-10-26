@@ -1,73 +1,142 @@
-class Exec {
-    private _loading: boolean;
-    private _error: Error | null;
-    private _response: Response | null;
-    public req: Promise<any> | undefined;
-    constructor() {
-        this._loading = true;
-        this._error = null;
-        this._response = null;
-    }
-    init(url: string, options: any) {
-        this._loading = true;
-        this._error = null;
-        this._response = null;
-        this.req = fetch(url, options)
+const __exec = (url: string, options: any) => {
+    let _loading: boolean = true;
+    let _error: any = null;
+    let _response: any = null;
+    return {
+        req: fetch(url, options)
             .then((res) => {
-                this._loading = false;
-                this._response = res;
+                _loading = false;
+                _response = res;
                 return res.json();
             })
             .catch((err) => {
-                this._loading = false;
-                this._error = err;
+                _loading = false;
+                _error = err;
                 return err;
-            });
+            }),
+        loading: () => _loading,
+        response: () => _response,
+        error: () => _error,
+    };
+};
+
+const __execAll = (urls: any, options: any) => {
+    let keys: any = null;
+    if (!Array.isArray(urls)) {
+        keys = Object.keys(urls);
+        urls = Object.values(urls);
     }
-    loading = () => this._loading;
-    response = () => this._response;
-    error = () => this._error;
-}
+    let _loading: boolean = true;
+    let _error: any = null;
+    let _response: any = null;
+    const initReq = Promise.all(
+        urls.map((u: any) => {
+            const { req } = __exec(u, options);
+            return req;
+        })
+    )
+        .then((res) => {
+            _response = res;
+            _loading = false;
+            return res;
+        })
+        .catch((err) => {
+            _loading = false;
+            _error = err;
+        });
+    return {
+        req: new Promise((resolve, reject) => {
+            if (keys !== null) {
+                const obj: any = {};
+                return initReq
+                    .then((res: any) => {
+                        res.forEach((r: any, i: number) => {
+                            obj[keys[i]] = r;
+                        });
+                        return resolve(obj);
+                    })
+                    .catch((err) => {
+                        return reject(err);
+                    });
+            }
+            return initReq
+                .then((res: any) => {
+                    return resolve(res);
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+        }),
+        loading: () => _loading,
+        response: () => _response,
+        error: () => _error,
+    };
+};
 
 const autoFetcher = (url: string | string[], options: any) => {
-    if (!Array.isArray(url)) {
-        const exec = new Exec();
-        exec.init(url, options);
-        return { req: exec.req, loading: exec.loading, error: exec.error, response: exec.response };
+    if (typeof url === "string") {
+        const { req, loading, response, error } = __exec(url, options);
+        return { req, loading, response, error };
     }
-
-    let loading = true;
-    let error = null;
-    let response = null;
-    const req = Promise.all(url.map((u) => {
-        const exec = new Exec();
-        exec.init(u, options);
-        return exec.req;
-    })).then((res) => {
-        response = res;
-        loading = false;
-        return res;
-    }).catch((err) => {
-        loading = false;
-        error = err;
-    })
-    return { req, loading: () => loading, error, response };
+    const { req, loading, response, error } = __execAll(url, options);
+    return { req, loading, response, error };
 };
 
 const fetcher = (url: string, options: any) => {
-    const get = (endpoint: string = "", cb: Function) => {
-        const exec = new Exec();
-        const newUrl = `${url}${endpoint}`;
-        const newOptions = { ...options, method: "get" };
-        exec.init(newUrl, newOptions);
-        return cb({ req: exec.req, loading: exec.loading, error: exec.error, response: exec.response });
+    const __start = (endpoint: string | string[], cb: Function, options: any) => {
+        if (typeof endpoint === "string") {
+            const newUrl = `${url}${endpoint}`;
+            const { req, loading, response, error } = __exec(newUrl, options);
+            return cb({ req, loading, error, response });
+        }
+        const newUrls = endpoint.map((end) => `${url}${end}`);
+        const { req, loading, response, error } = __execAll(newUrls, options);
+        return cb({ req, loading, error, response });
     };
-    const post = (data: any, endpoint: string = "", cb: Function) => {
-        const exec = new Exec();
-        const newUrl = `${url}${endpoint}`;
+
+    const __getArgsGet = (args: any[]): [string | string[], Function] => {
+        let endpoint: string | string[] = "";
+        let cb: Function = () => null;
+        if (args.length === 2) {
+            endpoint = args[0];
+            cb = args[1];
+        } else if (args.length === 1) {
+            cb = args[0];
+        } else if (args.length === 0) {
+            throw new Error(`"post function needs at least 1 argument, a callback function"`);
+        }
+        return [endpoint, cb];
+    };
+
+    const __getArgsPost = (args: any[]): [any, string | string[], Function] => {
+        let data: any;
+        let endpoint: string | string[] = "";
+        let cb: Function = () => null;
+        if (args.length === 3) {
+            data = args[0];
+            endpoint = args[1];
+            cb = args[2];
+        } else if (args.length === 2) {
+            data = args[0];
+            cb = args[2];
+        } else if (args.length <= 1) {
+            throw new Error(
+                `"post function needs at least 2 arguments, 1 : the data to post in object format, 2 : a callback function"`
+            );
+        }
+        return [data, endpoint, cb];
+    };
+
+    const get = (...args: any) => {
+        const [endpoint, cb] = __getArgsGet(args);
+        const newOptions = { ...options, method: "get" };
+        return __start(endpoint, cb, newOptions);
+    };
+
+    const post = (...args: any[]) => {
+        const [data, endpoint, cb] = __getArgsPost(args);
         const newOptions = { ...options, body: JSON.stringify(data), method: "post" };
-        exec.init(newUrl, newOptions);
-        return cb({ req: exec.req, loading: exec.loading, error: exec.error, response: exec.response });
+        return __start(endpoint, cb, newOptions);
     };
     return [get, post];
 };
