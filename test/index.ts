@@ -11,29 +11,58 @@ addGlobalCSS`
     }
 `;
 
-createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender }: any) => {
+createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss }: any) => {
     const {
-        state: { name, cond },
+        state,
         setState,
     } = createState({ name: "world", cond: true });
     setState("name", "world :)");
-
+    setState("name", "world :)2");
+    setState("name", "world :)");
+    setState("name", "world :)2");
+    setState("name", "world :)");
+    setState("name", "world :)2");
+    setState("name", "world :)");
+    setState("name", "world :)2");
+    setState("name", "world :)");
+    setState("name", "world :)9");
     const color = "red";
     const style = css`
         color: ${color};
         font-size: 3em;
     `;
-    const style2 = css`
-        text-decoration: overline;
-    `;
 
     const join1 = css`
         color: blue;
     `;
+
     const join2 = css`
-        text-decoration: underline;
         font-size: 5em;
     `;
+    
+
+    rawCss`
+    p {
+        animation-duration: 1s;
+        animation-name: slidein;
+      }
+      
+      @keyframes slidein {
+        from {
+          margin-left: 100%;
+          width: 300%;
+        }
+        75% {
+          font-size: 300%;
+          margin-left: 25%;
+          width: 150%;
+        }
+      
+        to {
+          margin-left: 0%;
+          width: 100%;
+        }
+      }`
 
     beforeFirstRender(() => {
         const { req, loading, getResponse } = fetcher(
@@ -45,23 +74,21 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
             true
         );
         req.then((res: any) => {
-            console.log(res, getResponse())
+            console.log(res, getResponse());
         })
 
         const [get, post] = fetcher("http://dummy.restapiexample.com/api/v1");
 
-        
-
-        get(["/employee/1", "/employee/3"], ({ req, isLoading, getResponse }: any) => {
-            console.log(isLoading());
-            console.log(getResponse());
-            req.then((res: any) => {
-                console.log("res", res);
-                console.log(isLoading());
-                console.log(getResponse());
-            });
-        });
-
+        // get(["/employee/1", "/employee/3"], ({ req, isLoading, getResponse }: any) => {
+        //     console.log(isLoading());
+        //     console.log(getResponse());
+        //     req.then((res: any) => {
+        //         console.log("res", res);
+        //         console.log(isLoading());
+        //         console.log(getResponse());
+        //     });
+        // });
+  
         // console.log(loading())
         // req.then((res: any) => {
         //     console.log(res)
@@ -92,7 +119,7 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
     });
 
     return () =>
-        html`<div class=${cx({ [cond]: cx(join2, style, style2) }) + " globalText"}>helllllo ${name}</div>
+        html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name}</p>
             <div class=${cx(join1, join2)}>blablabla</div>`;
 });
 

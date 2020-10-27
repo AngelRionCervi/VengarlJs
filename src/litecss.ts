@@ -3,7 +3,7 @@ const uid = new uniqid({ length: 8 });
 
 function buildTemplate(strings: TemplateStringsArray, inputs: string[]): string {
     return strings.reduce((acc: string, rule: string, index: number) => {
-        rule = rule.replace(/(\r\n|\n|\r|\s)/gm, "");
+        rule = rule.replace(/(\r\n|\n|\r)/gm, "");
         return `${acc}${rule}${inputs[index] ?? ""}`;
     }, "");
 }
@@ -12,9 +12,11 @@ export default class {
     shadowContainer: any;
     styleQueue: string[];
     generatedClasses: Map<string, string>;
+    injectedStyle: string;
     constructor(shadowContainer: any) {
         this.shadowContainer = shadowContainer;
         this.styleQueue = [];
+        this.injectedStyle = "";
         this.generatedClasses = new Map();
     }
     private __createNewClass(rules: string): string {
@@ -52,11 +54,14 @@ export default class {
             return className;
         }
     }
+    public injectRawCSS(strings: TemplateStringsArray, ...inputs: string[]): void {
+        this.injectedStyle += buildTemplate(strings, inputs);
+    }
     public addCSS(): void {
         const styleSheetEl = this.shadowContainer.querySelector("style");
+        styleSheetEl.innerHTML += this.injectedStyle;
         while (this.styleQueue.length > 0) {
-            const newClass: any = this.styleQueue.shift();
-            styleSheetEl.innerHTML += newClass;
+            styleSheetEl.innerHTML += this.styleQueue.pop();
         }
     }
 }

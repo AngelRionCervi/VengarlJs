@@ -104,6 +104,7 @@ export function createComp(name: string, defineComp: Function) {
                     queryAll,
                     fetcher,
                     css: this.liteCSS.parser.bind(this.liteCSS),
+                    rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),
                     cx: this.liteCSS.cx.bind(this.liteCSS),
                     props: this.props,
                     self: this,
@@ -117,7 +118,7 @@ export function createComp(name: string, defineComp: Function) {
             execSetStateQueue() {
                 while (this.setStateQueue.length > 0) {
                     const storeObj = store.__get(this.storeSymbol);
-                    const curCall = this.setStateQueue.shift();
+                    const curCall = this.setStateQueue.pop();
                     if (!keyExists(storeObj, curCall.key)) {
                         throw ERRORS.unknowStateKey(curCall.key, storeObj);
                     }
@@ -131,13 +132,13 @@ export function createComp(name: string, defineComp: Function) {
 
             private __renderElement() {
                 render(html`${this.shadowStyleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
-                this.liteCSS.addCSS();
             }
 
             connectedCallback() {
                 this.attached = true;
                 this.execSetStateQueue();
                 this.cycleAfterAttached();
+                this.liteCSS.addCSS();
             }
 
             disconnectedCallback() {
