@@ -7,6 +7,9 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "build"),
         filename: "js/bundle.js",
+        library: "vengarl",
+        libraryTarget: "umd",
+        umdNamedDefine: true,
     },
     devServer: {
         port: 8088,
@@ -25,8 +28,8 @@ module.exports = {
         extensions: [".tsx", ".ts", ".js"],
     },
     plugins: [
-        new HtmlWebpackPlugin({      
-          template: "./test/index.html" 
-        })
-      ]
+        new HtmlWebpackPlugin({
+            template: "./test/index.html",
+        }),
+    ],
 };
