@@ -60,6 +60,9 @@ export default class {
     public addCSS(): void {
         const styleSheetEl = this.shadowContainer.querySelector("style");
         styleSheetEl.innerHTML += this.injectedStyle;
+    }
+    public execQueue(): void {
+        const styleSheetEl = this.shadowContainer.querySelector("style");
         while (this.styleQueue.length > 0) {
             styleSheetEl.innerHTML += this.styleQueue.pop();
         }

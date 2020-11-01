@@ -64,6 +64,7 @@ export function createComp(name: string, defineComp: Function) {
                     this.setStateQueue.push({ key, val, cb });
                     if (this.attached) {
                         this.execSetStateQueue();
+                        this.liteCSS.execQueue();
                     }
                 };
 
@@ -139,6 +140,7 @@ export function createComp(name: string, defineComp: Function) {
                 this.execSetStateQueue();
                 this.cycleAfterAttached();
                 this.liteCSS.addCSS();
+                this.liteCSS.execQueue();
             }
 
             disconnectedCallback() {
