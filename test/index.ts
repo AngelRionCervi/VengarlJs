@@ -1,4 +1,5 @@
 import { createComp, store, addGlobalCSS } from "../src/main";
+import "./comp2";
 
 const black = "darkgrey";
 
@@ -60,23 +61,17 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
           font-size: 3em;
       `;
       }
+    const hihi = () => {
+        console.log("hihi")
+    }
 
     return () =>
         html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name}</p>
-            <div class=${getStyle()}>blablabla</div>`;
+            <div class=${getStyle()}>blablabla</div><test-comp2 .props=${hihi} ></test-comp2>`;
 });
 
-createComp("test-comp2", ({ createState, html }: any) => {
-    const {
-        state: { name, cond },
-        setState,
-    } = createState({ name: "world", cond: true });
-    setState("name", "world :)");
 
-    return () =>
-        html`<div>helllllo ${name}</div>
-            <div>blablabla</div>`;
-});
+
 
 // beforeFirstRender(() => {
 //     // const { req, loading, getResponse } = fetcher(

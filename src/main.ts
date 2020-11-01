@@ -107,7 +107,7 @@ export function createComp(name: string, defineComp: Function) {
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),
                     cx: this.liteCSS.cx.bind(this.liteCSS),
-                    props: this.props,
+                    props: () => this.props,
                     self: this,
                 });
                 this.cycleBeforeFirstRender();
