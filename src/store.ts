@@ -78,6 +78,7 @@ const storeInstance = () => {
             return {
                 ...this.getGlobalValues(),
                 setGlobal: this.setGlobal,
+                getGlobal: this.getGlobal,
             };
         },
     };
