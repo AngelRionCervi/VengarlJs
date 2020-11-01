@@ -77,7 +77,7 @@ const storeInstance = () => {
         getGlobalState(): object {
             return {
                 ...this.getGlobalValues(),
-                setGlobal: this.setGlobal,
+                setGlobal: this.setGlobal, 
                 getGlobal: this.getGlobal,
             };
         },
