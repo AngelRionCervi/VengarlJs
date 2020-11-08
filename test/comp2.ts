@@ -13,9 +13,9 @@ createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc,
 
     const mix = () => cx(
         nc("k", css`
-            font-size: 5em;
+            font-size: ${state.fontSize}em;
         `),
-        nc("k", css`
+        nc("l", css`
             text-decoration: underline;
         `)
     )
