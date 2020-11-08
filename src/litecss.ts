@@ -21,9 +21,6 @@ export default class {
         this.generatedClasses = new Map();
         this.namespaces = new Map();
     }
-    private __getStyleSheet() {
-        return this.shadowContainer.querySelector("style");
-    }
     private __createNewClass(rules: string): string {
         const className: string = `_${uid()}`;
         const newClass = `.${className}{${rules}}`;
@@ -55,27 +52,28 @@ export default class {
             const rules = args.reduce((acc: string, className: string): string => {
                 return `${acc}${this.generatedClasses.get(className)}`;
             }, "");
-            const className = this.__createNewClass(rules);
-            console.log(rules)
-            return className;
+            return this.__createNewClass(rules);
         }
     }
     public injectRawCSS(strings: TemplateStringsArray, ...inputs: string[]): void {
         this.injectedStyle += buildTemplate(strings, inputs);
     }
     public addCSS(): void {
-        const styleSheetEl = this.__getStyleSheet();
+        const styleSheetEl = this.shadowContainer.querySelector("style");
         styleSheetEl.innerHTML += this.injectedStyle;
     }
     public execQueue(): void {
-        const styleSheetEl = this.__getStyleSheet();
+        const styleSheetEl = this.shadowContainer.querySelector("style");
         while (this.styleQueue.length > 0) {
             styleSheetEl.innerHTML += this.styleQueue.pop();
         }
     }
     public namespaceCSS(namespace: string, newClassName: string): string {
-        const styleSheetEl = this.__getStyleSheet();
         if (this.namespaces.has(namespace)) {
+            const styleSheetEl: HTMLStyleElement | null = this.shadowContainer.querySelector("style");
+            if (styleSheetEl === null) {
+                throw new Error(`css ids must be unique, got multiple "${namespace}" ids`)
+            }
             const namespaceClass: any = this.namespaces.get(namespace);
             const rules = this.generatedClasses.get(namespaceClass);
             styleSheetEl.innerHTML = styleSheetEl.innerHTML.replace(`.${namespaceClass}{${rules}}`, "");

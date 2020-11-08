@@ -15,7 +15,7 @@ createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc,
         nc("k", css`
             font-size: 5em;
         `),
-        nc("l", css`
+        nc("k", css`
             text-decoration: underline;
         `)
     )
