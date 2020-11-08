@@ -13,11 +13,16 @@ export default class {
     styleQueue: string[];
     generatedClasses: Map<string, string>;
     injectedStyle: string;
+    namespaces: Map<string, string>;
     constructor(shadowContainer: any) {
         this.shadowContainer = shadowContainer;
         this.styleQueue = [];
         this.injectedStyle = "";
         this.generatedClasses = new Map();
+        this.namespaces = new Map();
+    }
+    private __getStyleSheet() {
+        return this.shadowContainer.querySelector("style");
     }
     private __createNewClass(rules: string): string {
         const className: string = `_${uid()}`;
@@ -51,6 +56,7 @@ export default class {
                 return `${acc}${this.generatedClasses.get(className)}`;
             }, "");
             const className = this.__createNewClass(rules);
+            console.log(rules)
             return className;
         }
     }
@@ -58,14 +64,27 @@ export default class {
         this.injectedStyle += buildTemplate(strings, inputs);
     }
     public addCSS(): void {
-        const styleSheetEl = this.shadowContainer.querySelector("style");
+        const styleSheetEl = this.__getStyleSheet();
         styleSheetEl.innerHTML += this.injectedStyle;
     }
     public execQueue(): void {
-        const styleSheetEl = this.shadowContainer.querySelector("style");
+        const styleSheetEl = this.__getStyleSheet();
         while (this.styleQueue.length > 0) {
             styleSheetEl.innerHTML += this.styleQueue.pop();
         }
+    }
+    public namespaceCSS(namespace: string, newClassName: string): string {
+        const styleSheetEl = this.__getStyleSheet();
+        if (this.namespaces.has(namespace)) {
+            const namespaceClass: any = this.namespaces.get(namespace);
+            const rules = this.generatedClasses.get(namespaceClass);
+            styleSheetEl.innerHTML = styleSheetEl.innerHTML.replace(`.${namespaceClass}{${rules}}`, "");
+            this.generatedClasses.delete(namespaceClass);
+            this.namespaces.set(namespace, newClassName);
+        } else {
+            this.namespaces.set(namespace, newClassName);
+        }
+        return newClassName;
     }
 }
 

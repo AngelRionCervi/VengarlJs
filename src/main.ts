@@ -4,8 +4,6 @@ import { setPath, keyExists } from "./helpers";
 import LiteCSS, { addGlobalCSS } from "./litecss";
 import fetcher from "./fetch";
 
-export { store, addGlobalCSS };
-
 const ERRORS = {
     notAttached: () => new Error("ShadowRoot isn't yet attached to the dom yet, listen to onAttached lifecycle event"),
     unknowStateKey: (key: string, obj: any) =>
@@ -18,7 +16,7 @@ const ERRORS = {
     }
 })();
 
-export function createComp(name: string, defineComp: Function) {
+function createComp(name: string, defineComp: Function) {
     customElements.define(
         name,
         class extends HTMLElement {
@@ -104,6 +102,7 @@ export function createComp(name: string, defineComp: Function) {
                     query,
                     queryAll,
                     fetcher,
+                    nc: this.liteCSS.namespaceCSS.bind(this.liteCSS),
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),
                     cx: this.liteCSS.cx.bind(this.liteCSS),
@@ -149,3 +148,5 @@ export function createComp(name: string, defineComp: Function) {
         }
     );
 }
+
+export { createComp, store, addGlobalCSS };
