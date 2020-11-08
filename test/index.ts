@@ -67,7 +67,7 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
 
     return () =>
         html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name}</p>
-            <div class=${getStyle()}>blablabla</div><test-comp2 someAttr="someValue" .props=${hihi} ></test-comp2>`;
+            <div class=${getStyle()}>blablabla</div><test-comp2 someAttr .props=${hihi} ></test-comp2>`;
 });
 
 
