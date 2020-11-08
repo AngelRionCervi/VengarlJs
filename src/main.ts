@@ -102,6 +102,7 @@ function createComp(name: string, defineComp: Function) {
                     query,
                     queryAll,
                     fetcher,
+                    attributes: this.attributes,
                     nc: this.liteCSS.namespaceCSS.bind(this.liteCSS),
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),

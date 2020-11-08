@@ -1,6 +1,6 @@
 import { createComp, store, addGlobalCSS } from "../src/main";
 
-createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc, cx }: any) => {
+createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc, cx, attributes }: any) => {
     const { state, setState } = createState({ name: "world", cond: true, fontSize: 1 });
     setState("name", "world :)");
 
@@ -25,6 +25,7 @@ createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc,
             "nm-1",
             mix()
         );
+    console.log(attributes)
 
     return () =>
         html`<div>helllllo ${state.name}</div>
