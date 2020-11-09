@@ -12,8 +12,8 @@ addGlobalCSS`
     }
 `;
 
-createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss, scopedComp }: any) => {
-    const { state, setState } = createState({ name: "world", cond: true, color: "red" });
+createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss, scopedComp, useGlobal }: any) => {
+    const { state, setState } = createState({ name: "world", cond: true, color: "red", globalKey: useGlobal("globalKey") });
     setState("name", "world :)");
     setState("name", "world :)2");
 
@@ -70,7 +70,7 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
     })
     
     return () =>
-        html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name}</p>
+        html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name} ${state.globalKey}</p>
             <div class=${getStyle()}>blablabla</div>
             <test-comp2 someAttr="someValue" .props=${hihi}></test-comp2>`;
 }, true);
