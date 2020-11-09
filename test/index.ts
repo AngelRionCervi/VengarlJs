@@ -1,5 +1,5 @@
 import { createComp, store, addGlobalCSS } from "../src/main";
-import "./comp2";
+import comp2 from "./comp2";
 
 const black = "darkgrey";
 
@@ -12,7 +12,7 @@ addGlobalCSS`
     }
 `;
 
-createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss }: any) => {
+createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss, scopedComp }: any) => {
     const { state, setState } = createState({ name: "world", cond: true, color: "red" });
     setState("name", "world :)");
     setState("name", "world :)2");
@@ -55,21 +55,25 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
         }
       }`;
 
-      const getStyle = () => {
-          return css`
-          color: ${state.color};
-          font-size: 3em;
-      `;
-      }
+    const getStyle = () => {
+        return css`
+            color: ${state.color};
+            font-size: 3em;
+        `;
+    };
     const hihi = () => {
-        console.log("hihi")
-    }
+        console.log("hihi");
+    };
 
+    scopedComp({
+        "test-comp2": comp2,
+    })
+    
     return () =>
         html`<p class=${cx({ [state.cond]: style }) + " globalText"}>helllllo ${state.name}</p>
-            <div class=${getStyle()}>blablabla</div><test-comp2 someAttr .props=${hihi} ></test-comp2>`;
-});
-
+            <div class=${getStyle()}>blablabla</div>
+            <test-comp2 someAttr="someValue" .props=${hihi}></test-comp2>`;
+}, true);
 
 
 

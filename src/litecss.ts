@@ -34,7 +34,7 @@ export default class {
         const className = this.__createNewClass(rules);
         return className;
     }
-    public cx(...args: any[]): string {
+    public cx(...args: any[]): string { // test + ne pas exiger un array pour obj[key]
         if (args.length === 1) {
             const obj = args[0];
             return Object.keys(obj).reduce((acc: string, key: string): string => {
@@ -73,7 +73,7 @@ export default class {
         if (this.namespaces.has(namespace)) {
             const styleSheetEl: HTMLStyleElement | null = this.shadowContainer.querySelector("style");
             if (styleSheetEl === null) {
-                throw new Error(`css ids must be unique, got multiple "${namespace}" ids`)
+                throw new Error(`css ids must be unique, got multiple "${namespace}" ids declared at once`)
             }
             const namespaceClass: any = this.namespaces.get(namespace);
             const rules = this.generatedClasses.get(namespaceClass);

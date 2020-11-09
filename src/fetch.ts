@@ -133,7 +133,7 @@ const fetcher = (url: string, options: any) => {
         } else if (args.length === 1) {
             cb = args[0];
         } else if (args.length === 0) {
-            throw new Error(`"post function needs at least 1 argument, a callback function"`);
+            throw new Error(`post function needs at least 1 argument : a callback function`);
         }
         return [endpoint, cb];
     };
@@ -151,7 +151,7 @@ const fetcher = (url: string, options: any) => {
             cb = args[1];
         } else if (args.length <= 1) {
             throw new Error(
-                `"post function needs at least 2 arguments, 1 : the data to post in object format, 2 : a callback function"`
+                `post function needs at least 2 arguments, 1 : the data to post in object format, 2 : a callback function`
             );
         }
         return [data, endpoint, cb];
