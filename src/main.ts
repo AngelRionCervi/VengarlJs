@@ -144,7 +144,6 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         private __connectScopedChildren() {
             this.childrenComponents.forEach((children) => {
                 Object.keys(children).forEach((compName: string) => {
-                    console.log(children[compName]);
                     children[compName]();
                 });
             });
