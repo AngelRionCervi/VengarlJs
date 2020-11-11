@@ -1,14 +1,23 @@
 import { createComp, store, addGlobalCSS } from "../src/main";
 
-import gState from "./state";
 
-export default createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc, cx, attributes, useGlobal }: any) => {
-    const { state, setState } = createState({ name: "world", cond: true, fontSize: 1, globalKey: useGlobal("globalKey") });
-    setState("name", "world :)");
+export default createComp("test-comp2", ({ createState, html, props, self, onAttached, css, nc, cx, attributes, useGlobal, useState }: any) => {
+    const [name, setName] = useState("hello :)");
+    const [fontSize, setFontSize] = useState("1");
+    const [gval, setGval] = useGlobal("globalKey");
+    
+    setName((baseVal: any) => baseVal + " welcome", ({updated, value}: any) => {
+        console.log("local fn + cb", updated, value)
+    });
+    setFontSize("5");
+
+    setGval((oldval: any) => oldval + " ::::::::)", ({ updated, value }: any) => {
+        console.log("global fn + cb",updated, value)
+    });
 
     onAttached(() => {
+        
         // @ts-ignore
-        gState.setGlobal("globalKey", "secondValue :)")
     });
 
     const mix = () =>
@@ -16,7 +25,7 @@ export default createComp("test-comp2", ({ createState, html, props, self, onAtt
             nc(
                 "k",
                 css`
-                    font-size: ${state.fontSize}em;
+                    font-size: ${fontSize()}em;
                 `
             ),
             nc(
@@ -30,6 +39,6 @@ export default createComp("test-comp2", ({ createState, html, props, self, onAtt
     const clazz = () => nc("nm-1", mix());
 
     return () =>
-        html`<div>helllllo ${state.name} ${state.globalKey}</div>
+        html`<div>helllllo ${name()} ${gval()}</div>
             <div class=${clazz()}>blablabla</div>`;
 });

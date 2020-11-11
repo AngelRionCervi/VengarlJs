@@ -12,7 +12,7 @@ const storeInstance = () => {
             store.set(symbol, foreignContext);
             return this;
         },
-        __get(symbol: symbol): object {
+        __get(symbol: symbol): any {
             if (!store.has(symbol)) return this;
             return store.get(symbol).state;
         },
@@ -22,6 +22,14 @@ const storeInstance = () => {
             store.get(symbol).state = newState;
             return this;
         },
+        __replace(symbolState: symbol, symbolKey: symbol, newVal: any) {
+            const state = store.get(symbolState).state;
+            state[symbolKey] = newVal;
+            return this;
+        },
+        // __replaceGlobal(symbolState: symbol, key: string, val: any) {
+        //     this.getGlobal()
+        // },
         remove(symbol: symbol): object {
             store.delete(symbol);
             return this;
@@ -45,18 +53,19 @@ const storeInstance = () => {
             glob[key].corStates.push(symbol);
             return this;
         },
-        setGlobal(key: string, val: any): object {
+        setGlobal(key: string, val: any) {
             let entry: entry = this.getGlobal()[key];
             if (!entry) {
                 entry = { val, corStates: [] };
                 this.getGlobal()[key] = entry.val;
-            }
+            } // else 
             entry.val = val;
+            if (entry.corStates.length === 0) return false;
             entry.corStates.forEach((symbol: symbol) => {
                 const ctx = store.get(symbol).ctx;
-                ctx.setState(key, entry.val);
+                ctx.__prepareUpdate();
             });
-            return this;
+            return true;
         },
         getGlobal(key: string | null = null): any {
             if (!key) return store.get(globalKey);

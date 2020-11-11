@@ -24,7 +24,6 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         htmlTemplate: any;
         setStateQueue: any[];
         shadowRootAccessor: ShadowRoot;
-        setState: (key: string, val: any, cb?: Function | undefined) => any;
         cycleBeforeFirstRender: Function;
         cycleAfterAttached: Function;
         cycleBeforeRender: Function;
@@ -33,6 +32,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         liteCSS: LiteCSS;
         shadowStyleEl: undefined | Node;
         childrenComponents: any[];
+        __prepareUpdate: () => void;
 
         constructor() {
             super();
@@ -58,22 +58,57 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
             this.shadowStyleEl = document.querySelector("style")?.cloneNode(true);
 
             store.__add(this.storeSymbol, { ctx: this, state: {} });
-            this.setState = (key: string, val: any, cb?: Function) => {
-                this.setStateQueue.push({ key, val, cb });
+
+            this.__prepareUpdate = (): boolean => {
                 if (this.attached) {
+                    this.setStateQueue.push("update");
                     this.__execSetStateQueue();
                     this.liteCSS.execQueue();
+                    return true;
+                } else if (this.setStateQueue.length === 0) {
+                    this.setStateQueue.push("update");
+                    return false;
                 }
+                return false;
             };
 
-            const createState = (initState = {}) => {
-                store.__addToExisting(this.storeSymbol, initState);
-                return { state: store.__get(this.storeSymbol), setState: this.setState };
+            const useState = (initVal: any) => {
+                const key = Symbol();
+                store.__addToExisting(this.storeSymbol, { [key]: initVal });
+                const getter = (cb?: Function) => {
+                    const res = store.__get(this.storeSymbol)[key];
+                    return cb ? cb(res) : res;
+                };
+                const setter = (val: any, cb?: Function) => {
+                    if (typeof val !== "function") {
+                        store.__replace(this.storeSymbol, key, val);
+                    } else {
+                        store.__replace(this.storeSymbol, key, val(getter()));
+                    }
+                    const updated = this.__prepareUpdate();
+                    const value = store.__get(this.storeSymbol)[key];
+                    return cb ? cb({ updated, value }) : value;
+                };
+                return [getter, setter];
             };
 
             const useGlobal = (key: string) => {
                 store.subscribeToGlobal(key, this.storeSymbol);
-                return store.getGlobal()[key].val;
+                const getter = (cb?: Function) => {
+                    const res = store.getGlobal()[key].val;
+                    return cb ? cb(res) : res;
+                };
+                const setter = (val: any, cb?: Function) => {
+                    let updated = false;
+                    if (typeof val !== "function") {
+                        updated = store.setGlobal(key, val);
+                    } else {
+                        updated = store.setGlobal(key, val(getter()));
+                    }
+                    const value = store.getGlobal()[key].val;
+                    return cb ? cb({ updated, value }) : value;
+                };
+                return [getter, setter];
             };
 
             const query = (key: string) => {
@@ -95,7 +130,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
             };
 
             this.htmlTemplate = defineComp({
-                createState,
+                useState,
                 onAttached,
                 beforeFirstRender,
                 onRender,
@@ -122,18 +157,12 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
             this.cycleAfterRender();
         }
 
-        private __execSetStateQueue() {
+        private __execSetStateQueue(): Function | void {
             while (this.setStateQueue.length > 0) {
-                const storeObj = store.__get(this.storeSymbol);
-                const curCall = this.setStateQueue.pop();
-                if (!keyExists(storeObj, curCall.key)) {
-                    throw ERRORS.unknowStateKey(curCall.key, storeObj);
-                }
-                setPath(storeObj, curCall.key, curCall.val);
+                this.setStateQueue.pop();
                 this.cycleBeforeRender();
                 this.__renderElement();
                 this.cycleAfterRender();
-                return curCall.cb ? curCall.cb() : undefined;
             }
         }
 
