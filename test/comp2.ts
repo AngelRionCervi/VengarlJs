@@ -17,7 +17,6 @@ export default createComp("test-comp2", ({ createState, html, props, self, onAtt
 
     onAttached(() => {
         
-        // @ts-ignore
     });
 
     const mix = () =>
