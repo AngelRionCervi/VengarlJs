@@ -1,8 +1,8 @@
 import uniqid from "short-unique-id";
 const uid = new uniqid({ length: 8 });
 
-function buildTemplate(strings: TemplateStringsArray, inputs: string[], safe: boolean = false): string {
-    const regex = safe ? /(\r\n|\n|\r)/gm : /(\r\n|\n|\r|\s)/gm
+function buildTemplate(strings: TemplateStringsArray, inputs: string[]): string {
+    const regex = /(\r\n|\n|\r)/gm
     return strings.reduce((acc: string, rule: string, index: number) => {
         rule = rule.replace(regex, "");
         return `${acc}${rule}${inputs[index] ?? ""}`;
@@ -57,7 +57,7 @@ export default class {
         }
     }
     public injectRawCSS(strings: TemplateStringsArray, ...inputs: string[]): void {
-        this.injectedStyle += buildTemplate(strings, inputs, true);
+        this.injectedStyle += buildTemplate(strings, inputs);
     }
     public addCSS(): void {
         const styleSheetEl = this.shadowContainer.querySelector("style");
@@ -90,5 +90,5 @@ export default class {
 export function addGlobalCSS(strings: TemplateStringsArray, ...inputs: string[]): void {
     const styleEl = document.querySelector("style");
     if (!styleEl) return;
-    styleEl.innerHTML += buildTemplate(strings, inputs, true);
+    styleEl.innerHTML += buildTemplate(strings, inputs);
 }
