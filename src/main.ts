@@ -3,6 +3,8 @@ import store from "./store";
 import { setPath, keyExists } from "./helpers";
 import LiteCSS, { addGlobalCSS } from "./litecss";
 import fetcher from "./fetch";
+import registry from "./Registry";
+import litWrap from "./litHtmlWrapper";
 
 const ERRORS = {
     notAttached: () => new Error("ShadowRoot isn't yet attached to the dom yet, listen to onAttached lifecycle event"),
@@ -17,6 +19,7 @@ const ERRORS = {
 })();
 
 function createComp(name: string, defineComp: Function, main: boolean = false) {
+    let self: any;
     class VenComp extends HTMLElement {
         private storeSymbol: symbol;
         private attached: any;
@@ -32,14 +35,17 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         liteCSS: LiteCSS;
         shadowStyleEl: undefined | Node;
         childrenComponents: any[];
+        name: string;
         __prepareUpdate: () => void;
 
         constructor() {
             super();
+            self = this;
             this.storeSymbol = Symbol();
             this.attached = false;
             this.setStateQueue = [];
             this.childrenComponents = [];
+            this.name = name;
 
             this.cycleBeforeRender = () => undefined;
             this.cycleAfterRender = () => undefined;
@@ -126,7 +132,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
             };
 
             const scopedComp = (obj: { [key: string]: Function }) => {
-                this.childrenComponents.push(obj);
+                this.childrenComponents.push(...Object.values(obj));
             };
 
             this.htmlTemplate = defineComp({
@@ -137,7 +143,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                 beforeRender,
                 onRemove,
                 useGlobal,
-                html,
+                html: litWrap(html),
                 query,
                 queryAll,
                 fetcher,
@@ -171,11 +177,27 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         }
 
         private __connectScopedChildren() {
-            this.childrenComponents.forEach((children) => {
-                Object.keys(children).forEach((compName: string) => {
-                    children[compName]();
-                });
+            this.childrenComponents.forEach((childObj) => {
+                //childObj();
             });
+            // console.log("childComps", this.newChildrenComponents, this.existingChildrenComponentsTags);
+            // this.newChildrenComponents.forEach(([tag, child]) => {
+            //     customElementsRegistry[tag] = child();
+            // });
+
+            // this.existingChildrenComponentsTags.forEach((tag) => {
+            //     const component = this.newChildrenComponents;
+            //     console.log(component);
+            //     if (component) {
+            //         component.props = this.props;
+            //     }
+            //     // find already built component in customElementsRegistry by tag
+            //     // switch the props
+            // })
+        }
+
+        public getTagName() {
+            return this.tagName;
         }
 
         connectedCallback() {
@@ -192,9 +214,18 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         }
     }
     if (main === true) {
+        registry.addRootTagName(name);
         return customElements.define(name, VenComp);
     }
-    return () => customElements.define(name, VenComp);
+    return {
+        type: "scopedElement",
+        tag: registry.getTag(name),
+        define: function() {
+            console.log("defined tag", this.tag)
+            customElements.define(this.tag, VenComp);
+            return self;
+        },
+    };
 }
 
 export { createComp, store, addGlobalCSS };

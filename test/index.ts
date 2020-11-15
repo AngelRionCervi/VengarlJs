@@ -2,7 +2,6 @@ import { createComp, store, addGlobalCSS } from "../src/main";
 import "./state";
 import comp2 from "./comp2";
 
-
 const black = "darkgrey";
 
 addGlobalCSS`
@@ -13,6 +12,10 @@ addGlobalCSS`
         margin: 50px;
     }
 `;
+
+export const button = createComp("awesome-button", ({html, props}: any) => {
+    return () => html`<button>awesome</button>`
+})
 
 createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss, scopedComp, useGlobal }: any) => {
 
@@ -62,17 +65,15 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
     const hihi = () => {
         console.log("hihi");
     };
-
-    scopedComp({
-        "test-comp2": comp2,
-    })
     
-    return () =>
-        html`<div>${global()} in another comp</div>
-            <test-comp2 someAttr="someValue" .props=${hihi}></test-comp2>`;
+    return () => {
+        return html`<div>${global()} in another comp</div>
+        <${comp2} someAttr="someValue" .props=${{hihi}}></${comp2}>`
+    }
+        
 }, true);
 
-
+// <${comp2} someAttr="someValue" .props=${{hihi}}></${comp2}>
 
 // beforeFirstRender(() => {
 //     // const { req, loading, getResponse } = fetcher(
