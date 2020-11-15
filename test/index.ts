@@ -68,7 +68,7 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
     
     return () => {
         return html`<div>${global()} in another comp</div>
-        <${comp2} someAttr="someValue" .props=${{hihi}}></${comp2}>`
+        <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{hihi}}></${comp2}>`
     }
         
 }, true);

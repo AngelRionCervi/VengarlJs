@@ -17,7 +17,7 @@ class Registry {
 
     public getTag(tagName: string): string {
         const occurences = this.__add(tagName);
-        const newTag = `${tagName}n${occurences}`;
+        const newTag = `${tagName}_${occurences}`;
         return newTag;
     }
 

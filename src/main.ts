@@ -1,4 +1,4 @@
-import { html, render } from "lit-html";
+import { html as litHtml, render } from "lit-html";
 import store from "./store";
 import { setPath, keyExists } from "./helpers";
 import LiteCSS, { addGlobalCSS } from "./litecss";
@@ -143,7 +143,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                 beforeRender,
                 onRemove,
                 useGlobal,
-                html: litWrap(html),
+                html: litWrap(litHtml),
                 query,
                 queryAll,
                 fetcher,
@@ -173,7 +173,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
         }
 
         private __renderElement() {
-            render(html`${this.shadowStyleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
+            render(litHtml`${this.shadowStyleEl}${this.htmlTemplate()}`, this.shadowRootAccessor);
         }
 
         private __connectScopedChildren() {
@@ -220,10 +220,10 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
     return {
         type: "scopedElement",
         tag: registry.getTag(name),
-        define: function() {
-            console.log("defined tag", this.tag)
+        defined: false,
+        define: function (): void {
             customElements.define(this.tag, VenComp);
-            return self;
+            this.defined = true;
         },
     };
 }
