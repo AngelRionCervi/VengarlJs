@@ -13,28 +13,28 @@ addGlobalCSS`
     }
 `;
 
-export const button = createComp("awesome-button", ({html, props}: any) => {
-    return () => html`<button>awesome</button>`
-})
+export const button = createComp("awesome-button", ({ html, props }: any) => {
+    return () => html`<button>awesome</button><${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${"booboo"}></${comp2}>`;
+});
 
-createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRender, rawCss, scopedComp, useGlobal }: any) => {
+createComp(
+    "test-comp",
+    ({ html, css, rawCss, useGlobal }: any) => {
+        //const [global, setGlobal] = useGlobal("globalKey");
 
-    const [global, setGlobal] = useGlobal("globalKey");
+        const style = css`
+            font-size: 3em;
+        `;
 
-    const style = css`
-        font-size: 3em;
-    `;
+        const join1 = css`
+            color: blue;
+        `;
 
-    const join1 = css`
-        color: blue;
-    `;
+        const join2 = css`
+            font-size: 5em;
+        `;
 
-    const join2 = css`
-        font-size: 5em;
-    `;
-
-
-    rawCss`
+        rawCss`
     p {
         animation-duration: 1s;
         animation-name: slidein;
@@ -57,21 +57,27 @@ createComp("test-comp", ({ createState, html, css, cx, fetcher, beforeFirstRende
         }
       }`;
 
-    const getStyle = () => {
-        return css`
-            font-size: 3em;
-        `;
-    };
-    const hihi = () => {
-        console.log("hihi");
-    };
-    
-    return () => {
-        return html`<div>${global()} in another comp</div>
-        <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{hihi}}></${comp2}>`
-    }
-        
-}, true);
+        const getStyle = () => {
+            return css`
+                font-size: 3em;
+            `;
+        };
+        const hihi = () => {
+            console.log("hihi");
+        };
+
+        const haha = () => {
+            console.log("haha");
+        };
+
+        return () => {
+            return html`<div> in another comp</div>
+            <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{ hihi }}><${button}></${button}></${comp2}>
+            <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{ haha }}></${comp2}>`;
+        };
+    },
+    true
+);
 
 // <${comp2} someAttr="someValue" .props=${{hihi}}></${comp2}>
 
