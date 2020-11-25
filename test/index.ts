@@ -14,13 +14,15 @@ addGlobalCSS`
 `;
 
 export const button = createComp("awesome-button", ({ html, props }: any) => {
-    return () => html`<button>awesome</button><${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${"booboo"}></${comp2}>`;
+    return () => html`<button>awesome</button>`;
 });
 
 createComp(
     "test-comp",
     ({ html, css, rawCss, useGlobal }: any) => {
-        //const [global, setGlobal] = useGlobal("globalKey");
+        const [global, setGlobal] = useGlobal("globalKey");
+
+        setGlobal("heeeeeeeeeeeey")
 
         const style = css`
             font-size: 3em;
@@ -71,7 +73,7 @@ createComp(
         };
 
         return () => {
-            return html`<div> in another comp</div>
+            return html`<div>${global()} in another comp</div>
             <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{ hihi }}><${button}></${button}></${comp2}>
             <${comp2} someAttr="someValue" otherAttr=${"boo"} .props=${{ haha }}></${comp2}>`;
         };

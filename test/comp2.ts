@@ -8,10 +8,10 @@ export default createComp("test-comp2", ({ html, props, onAttached, css, nc, cx,
     //const [gval, setGval] = useGlobal("globalKey");
     
     console.log("PROSP BEFORE", props)
-    // setName((baseVal: any) => baseVal + " welcome", ({updated, value}: any) => {
-    //     // console.log("local fn + cb", updated, value)
-    // });
-    // setFontSize("5");
+    setName((baseVal: any) => baseVal + " welcome", ({updated, value}: any) => {
+        console.log("local fn + cb", updated, value)
+    });
+    setFontSize("5");
 
     // setGval((oldval: any) => oldval + " ::::::::)", ({ updated, value }: any) => {
     //     //console.log("global fn + cb",updated, value)
@@ -26,7 +26,7 @@ export default createComp("test-comp2", ({ html, props, onAttached, css, nc, cx,
             nc(
                 "k",
                 css`
-                    font-size: ${fontSize()}em;
+                    font-size: ${fontSize}em;
                 `
             ),
             nc(
@@ -42,6 +42,6 @@ export default createComp("test-comp2", ({ html, props, onAttached, css, nc, cx,
     return () =>
         html`<div>helllllo</div>
             <div>blablabla</div>
-            <!-- <${button}></${button}> -->
+            <${button}></${button}>
             <slot></slot>`;
 });
