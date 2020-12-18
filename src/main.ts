@@ -17,7 +17,28 @@ const ERRORS = {
     }
 })();
 
-function createComp(name: string, defineComp: Function, main: boolean = false) {
+type DefineComp = (c: {
+    useState: (key: string) => [Function, Function],
+    onAttached: Function,
+    beforeFirstRender: Function,
+    onRender: Function,
+    beforeRender: Function,
+    onRemove: Function,
+    useGlobal: (key: string) => [Function, Function],
+    html: Function,
+    query: Function,
+    queryAll: Function,
+    fetcher: Function,
+    attributes: any,
+    css: Function,
+    rawCss: Function,
+    cx: Function,
+    nc: Function,
+    props: any,
+    self: any,
+}) => () => [string[], ...any[]];
+
+function createComp(name: string, defineComp: DefineComp, main: boolean = false) {
     const constructor = () =>
         class extends HTMLElement {
             private storeSymbol: symbol;
@@ -51,11 +72,11 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                 this.cycleAfterAttached = () => undefined;
                 this.cycleAfterRemoved = () => undefined;
 
-                const beforeFirstRender = (cb: Function) => (this.cycleBeforeFirstRender = cb);
-                const beforeRender = (cb: Function) => (this.cycleBeforeRender = cb);
-                const onRender = (cb: Function) => (this.cycleAfterRender = cb);
-                const onAttached = (cb: Function) => (this.cycleAfterAttached = cb);
-                const onRemove = (cb: Function) => (this.cycleAfterRemoved = cb);
+                const beforeFirstRender = (cb: Function): Function => (this.cycleBeforeFirstRender = cb);
+                const beforeRender = (cb: Function): Function => (this.cycleBeforeRender = cb);
+                const onRender = (cb: Function): Function => (this.cycleAfterRender = cb);
+                const onAttached = (cb: Function): Function => (this.cycleAfterAttached = cb);
+                const onRemove = (cb: Function): Function => (this.cycleAfterRemoved = cb);
 
                 this.shadowRootAccessor = this.attachShadow({ mode: "open" });
                 this.liteCSS = new LiteCSS(this.shadowRootAccessor);
@@ -75,7 +96,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                     }
                 };
 
-                const useState = (initVal: any) => {
+                const useState = (initVal: any): [Function, Function] => {
                     const key = Symbol();
                     store.__addToExisting(this.storeSymbol, { [key]: initVal });
                     const getter = (cb?: Function) => {
@@ -95,7 +116,7 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                     return [getter, setter];
                 };
 
-                const useGlobal = (key: string) => {
+                const useGlobal = (key: string): [Function, Function] => {
                     store.subscribeToGlobal(key, this.storeSymbol);
                     const getter = (cb?: Function) => {
                         const res = store.getGlobal()[key].val;
@@ -114,22 +135,18 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                     return [getter, setter];
                 };
 
-                const query = (key: string) => {
+                const query = (key: string): Element | null | Error => {
                     if (this.attached) {
                         return this.shadowRootAccessor.querySelector(key);
                     }
                     throw ERRORS.notAttached();
                 };
 
-                const queryAll = (key: string) => {
+                const queryAll = (key: string): NodeListOf<Element> | Error => {
                     if (this.attached) {
                         return this.shadowRootAccessor.querySelectorAll(key);
                     }
                     throw ERRORS.notAttached();
-                };
-
-                const scopedComp = (obj: { [key: string]: Function }) => {
-                    this.childrenComponents.push(...Object.values(obj));
                 };
 
                 this.htmlTemplate = defineComp({
@@ -144,7 +161,6 @@ function createComp(name: string, defineComp: Function, main: boolean = false) {
                     query,
                     queryAll,
                     fetcher,
-                    scopedComp,
                     attributes: this.attributes,
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),

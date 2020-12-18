@@ -1,4 +1,4 @@
-function transform(strings: TemplateStringsArray, values: any[]) {
+function transform(strings: TemplateStringsArray, values: any[]): [string[], ...any[]] {
     const newStrings: string[] = [];
     const newValues: any[] = [];
 
@@ -27,11 +27,11 @@ function transform(strings: TemplateStringsArray, values: any[]) {
             newValues.push(values[u]);
         }
     }
-    
+
     if (pushNext) {
         newStrings.push(strings[strings.length - 1]);
     }
-    
+
     return [newStrings, ...newValues];
 }
 

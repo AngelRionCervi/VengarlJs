@@ -1,47 +1,20 @@
-import { createComp, store, addGlobalCSS } from "../src/main";
-import { button } from "./index";
+import { createComp } from "../src/main";
 
-
-export default createComp("test-comp2", ({ html, props, onAttached, css, nc, cx, useGlobal, useState }: any) => {
-    const [name, setName] = useState("hello :)");
+export default createComp("test-comp2", ({ html, props, onAttached, useState }) => {
+    const [name, setName] = useState("hi :)");
     const [fontSize, setFontSize] = useState("1");
-    //const [gval, setGval] = useGlobal("globalKey");
-    
-    console.log("PROSP BEFORE", props)
-    setName((baseVal: any) => baseVal + " welcome", ({updated, value}: any) => {
-        console.log("local fn + cb", updated, value)
-    });
+
     setFontSize("5");
 
-    // setGval((oldval: any) => oldval + " ::::::::)", ({ updated, value }: any) => {
-    //     //console.log("global fn + cb",updated, value)
-    // });
-
     onAttached(() => {
-        console.log("PROSP ATTACHED", props)
+        console.log("props attached", props);
     });
 
-    const mix = () =>
-        cx(
-            nc(
-                "k",
-                css`
-                    font-size: ${fontSize}em;
-                `
-            ),
-            nc(
-                "l",
-                css`
-                    text-decoration: underline;
-                `
-            )
-        );
-
-    const clazz = () => nc("nm-1", mix());
+    const incName = () => {
+        setName((baseVal: string) => baseVal + " welcome");
+    }
 
     return () =>
-        html`<div>helllllo</div>
-            <div>blablabla</div>
-            <${button}></${button}>
-            <slot></slot>`;
+        html`<div style="font-size: ${fontSize()}em">helllllo world</div>
+        <div @click=${incName}>${name()}</div>`;
 });
