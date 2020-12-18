@@ -16,5 +16,5 @@ export default createComp("test-comp2", ({ html, props, onAttached, useState }) 
 
     return () =>
         html`<div style="font-size: ${fontSize()}em">helllllo world</div>
-        <div @click=${incName}>${name()}</div>`;
+        <div @click=${incName}>${name()}</div><slot></slot>`;
 });

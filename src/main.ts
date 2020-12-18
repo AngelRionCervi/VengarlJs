@@ -18,7 +18,7 @@ const ERRORS = {
 })();
 
 type DefineComp = (c: {
-    useState: (key: string) => [Function, Function],
+    useState: (key: any) => [Function, Function],
     onAttached: Function,
     beforeFirstRender: Function,
     onRender: Function,

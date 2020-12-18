@@ -1,6 +1,7 @@
 export default (name: string, constructor: Function) => {
     const _registry = new Map();
     return {
+        name,
         type: "scopedElement",
         getUniqTag(inc: number = 0): string {
             let newTag = `${name}_${inc}`;
@@ -14,7 +15,6 @@ export default (name: string, constructor: Function) => {
             if (existingTag) {
                 return existingTag;
             } else {
-                console.log("set nex REGISTRY")
                 _registry.set(clazz, name);
             }
             return this.getUniqTag();
@@ -22,10 +22,8 @@ export default (name: string, constructor: Function) => {
         define() {
             const clazz = constructor();
             const tag = this.register(clazz, name);
-            
             Promise.resolve().then(() => {
                 if (!customElements.get(tag)) {
-                    console.log(tag)
                     customElements.define(tag, clazz);
                 }
             });
