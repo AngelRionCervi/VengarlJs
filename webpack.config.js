@@ -11,10 +11,6 @@ module.exports = {
         libraryTarget: "umd",
         umdNamedDefine: true,
     },
-    devServer: {
-        port: 8088,
-        contentBase: path.join(__dirname, "test"),
-    },
     module: {
         rules: [
             {
@@ -28,6 +24,6 @@ module.exports = {
         extensions: [".tsx", ".ts", ".js"],
     },
     plugins: [
-        new NpmDtsPlugin({output: "index.d.ts"}),
+        new NpmDtsPlugin({output: "build/types/index.d.ts"}),
     ],
 };

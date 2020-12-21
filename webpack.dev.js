@@ -2,15 +2,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-    mode: "production",
+    mode: "development",
     entry: "./test/index.ts",
-    output: {
-        path: path.resolve(__dirname, "build"),
-        filename: "js/Vengarl.js",
-        library: "vengarl",
-        libraryTarget: "umd",
-        umdNamedDefine: true,
-    },
     devServer: {
         port: 8088,
         contentBase: path.join(__dirname, "test"),
