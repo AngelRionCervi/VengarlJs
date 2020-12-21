@@ -7,7 +7,7 @@ declare const _default: {
     createGlobalState(obj: any): object;
     subscribeToGlobal(key: string, symbol: symbol): object;
     setGlobal(key: string, val: any): boolean;
-    getGlobal(key?: string): any;
+    getGlobal(key?: string | null): any;
     getGlobalValues(): any;
     getGlobalState(): object;
 };
