@@ -1,14 +1,15 @@
 {
   "name": "@elonbezos/vengarljs",
-  "version": "0.0.4",
+  "version": "0.0.45",
   "description": "",
   "main": "./build/js/Vengarl.js",
   "scripts": {
-    "dev": "webpack serve",
-    "build": "webpack",
+    "dev": "webpack serve --config webpack.dev.js",
+    "build": "webpack && npm run copy-dec",
     "reset": "rm -rf ./build",
-    "copy-dec": "copyfiles \"./Vengarl.d.ts\" ./build/js"
+    "copy-dec": "copyfiles \"./index.d.ts\" ./build/types"
   },
+  "types": "./build/types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/AngelRionCervi/VengarlJs.git"
