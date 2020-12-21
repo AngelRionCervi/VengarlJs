@@ -15,9 +15,8 @@ export default createComp("btn-switch", ({ html, useState }) => {
         setBtn(btn().name === "awesome-button1" ? button2 : button1);
     };
 
-    return () => {
-        return html`
+    return () => html`
             <button @click=${switchButton}>switch</button>
             <${btn()}></${btn()}>`;
-    };
+    
 });
