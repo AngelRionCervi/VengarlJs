@@ -2,7 +2,7 @@
   "name": "vengarljs",
   "version": "1.0.0",
   "description": "",
-  "main": "./build/js/bundle.js",
+  "main": "./build/js/Vengarl.js",
   "scripts": {
     "dev": "webpack serve",
     "build": "webpack && copyfiles \"./Vengarl.d.ts\" ./build/js",
