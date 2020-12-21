@@ -1,4 +1,4 @@
-declare module 'vengarl/src/definer' {
+declare module '@elonbezos/vengarljs/src/definer' {
   const _default: (name: string, constructor: Function) => {
       name: string;
       type: string;
@@ -9,7 +9,7 @@ declare module 'vengarl/src/definer' {
   export default _default;
 
 }
-declare module 'vengarl/src/fetch' {
+declare module '@elonbezos/vengarljs/src/fetch' {
   const _default: (url: string, options?: any, autoExec?: boolean) => {
       req: Promise<unknown>;
       isLoading: () => boolean;
@@ -19,12 +19,12 @@ declare module 'vengarl/src/fetch' {
   export default _default;
 
 }
-declare module 'vengarl/src/litHtmlWrapper' {
+declare module '@elonbezos/vengarljs/src/litHtmlWrapper' {
   const _default: (html: any) => (strings: TemplateStringsArray, ...values: string[]) => any;
   export default _default;
 
 }
-declare module 'vengarl/src/litecss' {
+declare module '@elonbezos/vengarljs/src/litecss' {
   export default class {
       shadowContainer: any;
       styleQueue: string[];
@@ -43,9 +43,9 @@ declare module 'vengarl/src/litecss' {
   export function addGlobalCSS(strings: TemplateStringsArray, ...inputs: string[]): void;
 
 }
-declare module 'vengarl/src/main' {
-  import store from "vengarl/src/store";
-  import { addGlobalCSS } from "vengarl/src/litecss";
+declare module '@elonbezos/vengarljs/src/main' {
+  import store from "@elonbezos/vengarljs/src/store";
+  import { addGlobalCSS } from "@elonbezos/vengarljs/src/litecss";
   type DefineComp = (c: {
       useState: (key: any) => [Function, Function];
       onAttached: Function;
@@ -76,7 +76,7 @@ declare module 'vengarl/src/main' {
   export { createComp, store, addGlobalCSS };
 
 }
-declare module 'vengarl/src/store' {
+declare module '@elonbezos/vengarljs/src/store' {
   const _default: {
       __add(symbol: symbol, foreignContext: any): object;
       __get(symbol: symbol): any;
@@ -93,7 +93,7 @@ declare module 'vengarl/src/store' {
   export default _default;
 
 }
-declare module 'vengarl/test/comp2' {
+declare module '@elonbezos/vengarljs/test/comp2' {
   const _default: void | {
       name: string;
       type: string;
@@ -104,7 +104,7 @@ declare module 'vengarl/test/comp2' {
   export default _default;
 
 }
-declare module 'vengarl/test/examples/comp-switch-ex' {
+declare module '@elonbezos/vengarljs/test/examples/comp-switch-ex' {
   const _default: void | {
       name: string;
       type: string;
@@ -115,7 +115,7 @@ declare module 'vengarl/test/examples/comp-switch-ex' {
   export default _default;
 
 }
-declare module 'vengarl/test/examples/store-ex' {
+declare module '@elonbezos/vengarljs/test/examples/store-ex' {
   const _default: void | {
       name: string;
       type: string;
@@ -126,16 +126,16 @@ declare module 'vengarl/test/examples/store-ex' {
   export default _default;
 
 }
-declare module 'vengarl/test/index' {
+declare module '@elonbezos/vengarljs/test/index' {
   import "./state";
 
 }
-declare module 'vengarl/test/state' {
+declare module '@elonbezos/vengarljs/test/state' {
   const _default: object;
   export default _default;
 
 }
-declare module 'vengarl' {
-  import main = require('vengarl/index');
+declare module '@elonbezos/vengarljs' {
+  import main = require('@elonbezos/vengarljs/index');
   export = main;
 }
