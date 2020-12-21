@@ -1,20 +1,20 @@
 import { createComp } from "../src/main";
 
-export default createComp("test-comp2", ({ html, props, onAttached, useState }) => {
-    const [name, setName] = useState("hi :)");
-    const [fontSize, setFontSize] = useState("1");
+export default createComp("test-one", ({ html, props, onAttached, useState }) => {
+    const [getNumber, setNumber] = useState(0);
 
-    setFontSize("5");
+    const [fontSize, setFontSize] = useState("1");
+    setFontSize("2");
 
     onAttached(() => {
         console.log("props attached", props);
     });
 
-    const incName = () => {
-        setName((baseVal: string) => baseVal + " welcome");
-    }
+    const incNumber = () => {
+        setNumber((baseVal: string) => baseVal + 1);
+    };
 
     return () =>
-        html`<div style="font-size: ${fontSize()}em">helllllo world</div>
-        <div @click=${incName}>${name()}</div><slot></slot>`;
+        html`<button @click=${incNumber} style="font-size: ${fontSize()}em">add</button>
+            <span style="font-size: ${fontSize()}em">${getNumber()}</span>`;
 });

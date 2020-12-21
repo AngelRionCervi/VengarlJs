@@ -1,12 +1,13 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const NpmDtsPlugin = require('npm-dts-webpack-plugin');
 
 module.exports = {
     mode: "production",
     entry: "./test/index.ts",
     output: {
         path: path.resolve(__dirname, "build"),
-        filename: "js/bundle.js",
+        filename: "js/Vengarl.js",
         library: "vengarl",
         libraryTarget: "umd",
         umdNamedDefine: true,
@@ -28,6 +29,7 @@ module.exports = {
         extensions: [".tsx", ".ts", ".js"],
     },
     plugins: [
+        new NpmDtsPlugin({output: "Vengarl.d.ts"}),
         new HtmlWebpackPlugin({
             template: "./test/index.html",
         }),

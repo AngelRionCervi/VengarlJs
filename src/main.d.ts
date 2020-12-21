@@ -1,7 +1,7 @@
 import store from "./store";
 import { addGlobalCSS } from "./litecss";
 declare type DefineComp = (c: {
-    useState: (key: string) => [Function, Function];
+    useState: (key: any) => [Function, Function];
     onAttached: Function;
     beforeFirstRender: Function;
     onRender: Function;
@@ -21,6 +21,7 @@ declare type DefineComp = (c: {
     self: any;
 }) => () => [string[], ...any[]];
 declare function createComp(name: string, defineComp: DefineComp, main?: boolean): void | {
+    name: string;
     type: string;
     getUniqTag(inc?: number): string;
     register(clazz: any, name: string): any;
