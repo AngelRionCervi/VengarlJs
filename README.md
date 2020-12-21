@@ -133,7 +133,7 @@ rawCss`
 
 Vengarl can store data globally and make use of it as well as change it.
 
-Before that a store object must be created and imported as soon as possible (before any component using it are initialized)
+A store object can be created and imported as soon as possible (before any component using it are initialized)
 
 store.js
 ```typescript
