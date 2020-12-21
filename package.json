@@ -1,12 +1,16 @@
 {
   "name": "@elonbezos/vengarljs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "./build/js/Vengarl.js",
   "scripts": {
     "dev": "webpack serve",
     "build": "webpack && copyfiles \"./Vengarl.d.ts\" ./build/js",
     "reset": "rm -rf ./build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AngelRionCervi/VengarlJs.git"
   },
   "author": "",
   "license": "ISC",
