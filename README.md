@@ -77,7 +77,7 @@ return () =>
 is called and lit-html takes care of the rendering
 
 
-### 3. utilities
+### 3. Utilities
 
 `query`: takes a string selector as argument and query an element inside the shadow-dom of the element.
 
@@ -282,6 +282,7 @@ ___
 ## Credits
 
 [bishmish](https://github.com/bashmish/carehtml) for careHtml
+
 Google polymer team for lit-html
 
 
