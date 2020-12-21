@@ -1,11 +1,11 @@
 {
   "name": "@elonbezos/vengarljs",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "",
   "main": "./build/js/index.js",
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --config webpack.config.js && dts-bundle --name @elonbezos/vengarljs --main src/main.d.ts --out ../build/types/index.d.ts",
     "reset": "rm -rf ./build"
   },
   "types": "./build/types/index.d.ts",
