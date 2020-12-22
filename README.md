@@ -1,6 +1,6 @@
  # VengarlJs
 
-Vengarl is a small js library that allows you to easily make native custome elements and manipulate them.
+VengarlJs is a small js library that allows you to easily create web components with the native custom elements API and manipulate them.
 It's built on top of lit-html and is heavily inspired by careHtml and React.
 
 ```typescript
@@ -8,7 +8,6 @@ import { createComp } from "../src/main";
 
 export default createComp("test-one", ({ html, props, onAttached, useState }) => {
     const [getNumber, setNumber] = useState(0);
-
     const [fontSize, setFontSize] = useState("1");
     setFontSize("2");
 
@@ -28,13 +27,13 @@ export default createComp("test-one", ({ html, props, onAttached, useState }) =>
 
 ## createComp
 
-The imported function `createComp` requires 2 arguments (or 3 to make a root component).
+The imported function `createComp` is the bread and butter of the library, it requires 2 arguments (or 3 to make a root component, you will understand why later).
 The first one is the name of the custom element with a "-" as required by the specification, 
 the second one is a function that gets immediately executed with an object as argument.
 
 The object contains different properties :
 
-### 1. lifecycle functions
+### 1. Lifecycle callbacks
 
 ```typescript
 onAttached(() => {
@@ -122,9 +121,9 @@ rawCss`
 
 ### 4. Attributes / props / this
 
-`attributes`: The attributes passed on the custom element.
+`attributes`: The attributes passed to the custom element with lit-html.
 
-`props`: The properties passed on the custom element.
+`props`: The properties passed to the custom element with lit-html.
 
 `self`: The `this` referring to the custom element's context.
 
@@ -268,14 +267,14 @@ export default createComp("btn-switch", ({ html, useState }) => {
 
 ## Suggestions
 
-If you have any suggestions or comments to make, don't hesitate to open an issue or contact me.
+If you have any suggestions or comments to make, don't hesitate to open an issue, make a pr or contact me.
 
 Also English isn't my first language so don't hesitate to tell me if the wording is incorrect.
 
 
 ___ 
 
-This is a very unfinished, unpolished and buggy piece of code, do whatever you want with it.
+Warning: this is a very unfinished, unpolished and probably buggy piece of code.
 
 ___
 
