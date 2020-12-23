@@ -4,7 +4,7 @@ VengarlJs is a small js library that allows you to easily create web components 
 It's built on top of lit-html and is heavily inspired by careHtml and React.
 
 ```typescript
-import { createComp } from "../src/main";
+import { createComp } from "@elonbezos/vengarljs";
 
 export default createComp("test-one", ({ html, props, onAttached, useState }) => {
     const [getNumber, setNumber] = useState(0);
@@ -136,7 +136,7 @@ A store object can be created and imported as soon as possible (before any compo
 
 store.js
 ```typescript
-import { store } from "../src/main";
+import { store } from "@elonbezos/vengarljs";
  
 store.createGlobalState({ globalKey: "some global value"})
  
@@ -145,7 +145,7 @@ export default store.getGlobalState();
 
 index.js
 ```typescript
-import { createComp } from "Vengarl";
+import { createComp } from "@elonbezos/vengarljs";
 import "./store";
 ```
 
@@ -185,7 +185,7 @@ Instal the library `npm install @elonbezos/vengarljs`.
 ### 2: Create a root element
 
 ```typescript
-import { createComp } from "../src/main";
+import { createComp } from "@elonbezos/vengarljs";
 import SomeComponent from "./examples/comp-switch-ex";
 import SomeOtherComponent from "./examples/store-ex";
 
