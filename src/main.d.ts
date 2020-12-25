@@ -11,7 +11,6 @@ declare type DefineComp = (c: {
     html: Function;
     query: Function;
     queryAll: Function;
-    fetcher: Function;
     attributes: any;
     css: Function;
     rawCss: Function;

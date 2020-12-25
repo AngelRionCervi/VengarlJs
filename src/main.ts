@@ -1,7 +1,6 @@
 import { html as litHtml, render } from "lit-html";
 import store from "./store";
 import LiteCSS, { addGlobalCSS } from "./litecss";
-import fetcher from "./fetch";
 import litWrap from "./litHtmlWrapper";
 import definer from "./definer";
 
@@ -28,7 +27,6 @@ type DefineComp = (c: {
     html: Function,
     query: Function,
     queryAll: Function,
-    fetcher: Function,
     attributes: any,
     css: Function,
     rawCss: Function,
@@ -160,7 +158,6 @@ function createComp(name: string, defineComp: DefineComp, main: boolean = false)
                     html: litWrap(litHtml),
                     query,
                     queryAll,
-                    fetcher,
                     attributes: this.attributes,
                     css: this.liteCSS.parser.bind(this.liteCSS),
                     rawCss: this.liteCSS.injectRawCSS.bind(this.liteCSS),

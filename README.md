@@ -116,8 +116,6 @@ rawCss`
 
 `nc`: takes an id and a css class as argument and allows to rebuild a class while replacing the previous css rules. WIP
 
-`fetcher` a small addition to the fetch api build to handle multiple requests as one. WIP
-
 
 ### 4. Attributes / props / this
 
