@@ -58,7 +58,7 @@ createComp(
 );
 ```
 
-Notice the third argument of createComp `true`. This means that this is a root component that we write ourselfs in an index.html file :
+Notice the third argument of createComp `true`. This means that this is a root component that we have to write ourselfs in an index.html file :
 
 ```html
 <body>
@@ -97,9 +97,9 @@ import "./store";
 
 ## createComp
 
-The imported function `createComp` is the bread and butter of the library, it requires 2 arguments (or 3 to make a root component, you will understand why later).
-The first one is the name of the custom element with a "-" as required by the specification, 
-the second one is a function that gets immediately executed with an object as argument.
+The imported function `createComp` is the bread and butter of the library, it requires 2 arguments (or 3 to make a root component).
+The first one is the name of the custom element with a "-" as required by the HTML specification, 
+the second one is a function that gets executed with an object as argument.
 
 The object contains different properties :
 
@@ -156,31 +156,9 @@ const foo = query("#bar");
 
 `queryAll`: same as query but return an array of the matched elements.
 
-`css`: a small very wip css in js solution. WIP
-
-
-```typescript
-const className = css`
-       color: blue;
-   `
-return () => html`<button class=${className}>hello world</button>`
-```
+`css`: a small css in js solution (see below in styling section).
 
 `rawCss`: used to inject raw css in a shadow-dom `<style></style>` element.
-
-```typescript
-rawCss`
-    @keyframes slidein {
-       from {
-         margin-left: 100%;
-       }
-       to {
-         margin-left: 0%;
-       }
-     }
-`;
-
-```
 
 `cx`: allows to conditionally attribute css classes or combines them into one (inspired by classNames from [JedWatson](https://github.com/JedWatson/classnames)).
 
@@ -227,8 +205,7 @@ export default createComp("test-store", ({ html, useGlobal }) => {
 });
 ```
 
-Read and set `globalKey`
-
+Read and write `globalKey`
 ```typescript
 export default createComp("test-store", ({ html, useGlobal }) => {
    const [getName, setName] = useGlobal("globalKey");
@@ -285,7 +262,7 @@ const style = cx(style1, { [style2]: true, [style3]: true }, { [style4]: true })
 
 ### nc
 
-The template being rerendered afetr each state change, generating a new class this way :
+The template being rerendered after each state change, generating a new class this way :
 
 ```typescript
 const style1 = (size: number) => css`
@@ -300,7 +277,7 @@ return () =>
     `;
 ```
 
-would add new lines in the components style tag without replacing the old ones.
+would add new lines in the components style element without replacing the old ones.
 To prevent that we can use the nc function that identifies a set of css rules and replaces them when it gets called again.
 
 ```typescript
@@ -309,11 +286,11 @@ const style1 = (size: number) => nc("hey-text", css`
 `);
 ```
 
-(It would be cool to have this behavior as default, but I can't find a way to make this work without rewriting all the css rules every time a class is regenrated).
+(It would be cool to have this behavior as default, but I can't find a way to make this work without rewriting all the css rules of the component every time a class is regenrated).
 
 ### rawCss
 
-As the name implies, it allows to inject raw css to the component's style tag.
+As the name implies, it allows to inject raw css to the component's style element.
 
 ```typescript
 rawCss`
@@ -334,8 +311,7 @@ Useful for keyframes, font-face and media queries.
 
 Second named import of the library alongside createComp.
 
-Allows the css to be available globally by all components (the styling is copied in all component style tags).
-
+Allows the css to be available globally by all components (the styling is automatically copied in all component style elements).
 
 ```typescript
 import { createComp, addGlobalCss } from "@elonbezos/vengarljs";
