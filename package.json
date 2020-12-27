@@ -1,6 +1,6 @@
 {
   "name": "@elonbezos/vengarljs",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "description": "",
   "main": "./build/js/index.js",
   "scripts": {
