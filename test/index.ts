@@ -1,6 +1,6 @@
 import { createComp } from "../src/main";
 import SomeComponent from "./examples/comp-switch-ex";
-import SomeOtherComponent from "./examples/store-ex";
+import SomeOtherComponent from "./examples/style-ex";
 import "./state";
 
 createComp(

@@ -1,6 +1,6 @@
 import { html as litHtml, render } from "lit-html";
 import store from "./store";
-import LiteCSS, { addGlobalCSS } from "./litecss";
+import LiteCSS, { addGlobalCss } from "./litecss";
 import litWrap from "./litHtmlWrapper";
 import definer from "./definer";
 
@@ -206,4 +206,4 @@ function createComp(name: string, defineComp: DefineComp, main: boolean = false)
     return definer(name, constructor);
 }
 
-export { createComp, store, addGlobalCSS };
+export { createComp, store, addGlobalCss };
