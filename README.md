@@ -4,7 +4,7 @@ VengarlJs is a small js library that allows you to easily create web components 
 It's built on top of lit-html and is heavily inspired by careHtml and React.
 
 ```typescript
-import { createComp } from "@elonbezos/vengarljs";
+import { createComp } from "vengarljs";
 
 export default createComp("test-one", ({ html, props, onAttached, useState }) => {
     const [getNumber, setNumber] = useState(0);
@@ -30,7 +30,7 @@ export default createComp("test-one", ({ html, props, onAttached, useState }) =>
 
 ### 1. Installation
 
-Instal the library `npm install @elonbezos/vengarljs`.
+Instal the library `npm install vengarljs`.
 
 ### 2. Create a component
 
@@ -43,7 +43,7 @@ export const awesomeButton = createComp("awesome-button", ({ html }) => {
 ### 3. Create a root component
 
 ```typescript
-import { createComp } from "@elonbezos/vengarljs";
+import { createComp } from "vengarljs";
 import { awesomeButton } from "./awesomeButton";
 
 createComp(
@@ -182,7 +182,7 @@ A store object can be created and imported as soon as possible (before any compo
 
 store.js
 ```typescript
-import { store } from "@elonbezos/vengarljs";
+import { store } from "vengarljs";
  
 store.createGlobalState({ globalKey: "some global value"})
  
@@ -191,7 +191,7 @@ export default store.getGlobalState();
 
 index.js
 ```typescript
-import { createComp } from "@elonbezos/vengarljs";
+import { createComp } from "vengarljs";
 import "./store";
 ```
 
@@ -314,7 +314,7 @@ Second named import of the library alongside createComp.
 Allows the css to be available globally by all components (the styling is automatically copied in all component style elements).
 
 ```typescript
-import { createComp, addGlobalCss } from "@elonbezos/vengarljs";
+import { createComp, addGlobalCss } from "vengarljs";
 
 addGlobalCss`
     @keyframes slidein {
